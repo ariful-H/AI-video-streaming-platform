@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumGaze - AI-Powered Gesture Control Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-background.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Leonardo.ai inspired styles */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+            --secondary-gradient: linear-gradient(135deg, #ec4899, #8b5cf6);
+            --text-gradient: linear-gradient(135deg, #ffffff, #d1d5db);
+            --surface-dark: #0f172a;
+            --surface-darker: #0a0f1d;
+            --surface-lighter: #1e293b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--surface-dark);
+            color: var(--text-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Leonardo.ai style grid background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -2;
+        }
+        
+        /* Leonardo.ai style gradient background */
+        .gradient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.15), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1), transparent 60%);
+            z-index: -1;
+            opacity: 0.8;
+        }
+        
+        /* Leonardo.ai style announcement bar */
+        .announcement-bar {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: 500;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .announcement-bar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .announcement-bar a svg {
+            margin-left: 4px;
+        }
+        
+        /* Leonardo.ai style navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .navbar-links {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .navbar-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+        
+        .navbar-link:hover, .navbar-link.active {
+            color: var(--text-light);
+        }
+        
+        .navbar-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--secondary-gradient);
+            border-radius: 2px;
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .login-button {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .register-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+        
+        .launch-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .launch-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Hero section */
+        .hero-section {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 24px;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff, #4ecca3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            animation: titleReveal 1.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        @keyframes titleReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-title-shimmer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(78, 204, 163, 0.2) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 3s infinite;
+            background-size: 200% 100%;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        .hero-subtitle {
+            font-size: 22px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+        
+        /* Features section */
+        .features-section {
+            padding: 100px 24px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+        
+        .section-header {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-light);
+        }
+        
+        .feature-description {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        /* CTA section */
+        .cta-section {
+            padding: 100px 24px;
+            text-align: center;
+        }
+        
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .cta-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cta-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--surface-darker);
+            padding: 60px 24px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-brand {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .footer-description {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .footer-heading {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 12px;
+        }
+        
+        .footer-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-link a:hover {
+            color: var(--text-light);
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Games Section Styles */
+        .games-section {
+            padding: 80px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .game-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .game-preview {
+            position: relative;
+            height: 180px;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .game-icon {
+            font-size: 64px;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover .game-icon {
+            transform: scale(1.1);
+        }
+        
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover .game-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .game-card:hover .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.6);
+        }
+        
+        .game-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+        
+        .game-description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        /* Game Modal Styles */
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 15, 29, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .game-modal-content {
+            background: var(--surface-darker);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: modalOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        
+        @keyframes modalOpen {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .game-modal-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .close-game-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-game-btn:hover {
+            color: var(--text-light);
+            transform: rotate(90deg);
+        }
+        
+        .game-modal-body {
+            padding: 20px;
+            height: 70vh;
+            position: relative;
+        }
+        
+        .game-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-darker);
+            z-index: 10;
+        }
+        
+        .game-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-purple);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .game-container {
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Game section styles continue above */
+        
+        /* CTA section styles begin below */
+    </style>
+</head>
+<body class="page-transition">
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+    <div class="loader"></div>
+
+    <!-- Background elements -->
+    <div class="grid-background"></div>
+    <div class="gradient-background"></div>
+    
+    <!-- Announcement bar -->
+    <div class="announcement-bar">
+        Gesture control is now available! 
+        <a href="/movies">
+            Try it now
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+    </div>
+    
+    <!-- Leonardo.ai style navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v8"></path>
+                    <path d="M12 18v4"></path>
+                    <path d="M4.93 10.93l2.83 2.83"></path>
+                    <path d="M16.24 16.24l2.83 2.83"></path>
+                    <path d="M2 12h4"></path>
+                    <path d="M18 12h4"></path>
+                    <path d="M4.93 13.07l2.83-2.83"></path>
+                    <path d="M16.24 7.76l2.83-2.83"></path>
+                </svg>
+                QuantumGaze
+            </a>
+            <div class="navbar-links">
+                <a href="/" class="navbar-link active">Home</a>
+                <a href="/movies" class="navbar-link">Movies</a>
+                <a href="/features" class="navbar-link">Features</a>
+                <a href="#games" class="navbar-link">Games</a>
+                <a href="/about" class="navbar-link">About</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="/login" class="login-button">Login</a>
+            <a href="/register" class="register-button">Register</a>
+        </div>
+    </nav>
+    
+    <!-- Hero section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Control Videos & Games with <span class="gradient-text">Gestures</span>
+                <div class="hero-title-shimmer"></div>
+            </h1>
+            <p class="hero-subtitle">
+                QuantumGaze uses AI to detect your hand gestures and facial expressions, allowing you to control videos and games without touching your device.
+            </p>
+            
+            <a href="/movies" class="cta-button">Try It Now</a>
+        </div>
+    </section>
+    
+    <!-- Features section -->
+    <section class="features-section reveal" id="features">
+        <h2 class="section-header">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👋</div>
+                <h3 class="feature-title">Gesture Control</h3>
+                <p class="feature-description">Control video playback with simple hand gestures. Play, pause, rewind, and more - all without touching your device.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">Video Search</h3>
+                <p class="feature-description">Search for videos from YouTube and other platforms directly from our interface.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h3 class="feature-title">Attention Detection</h3>
+                <p class="feature-description">Videos automatically pause when you look away or close your eyes, ensuring you never miss a moment.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h3 class="feature-title">Intuitive Interface</h3>
+                <p class="feature-description">A sleek, modern interface designed for ease of use and a futuristic experience.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Privacy First</h3>
+                <p class="feature-description">All gesture processing happens locally on your device - your video feed is never sent to our servers.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Fast & Responsive</h3>
+                <p class="feature-description">Optimized for performance with real-time gesture recognition and minimal latency.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Games section with redirect button -->
+    <section id="games" class="games-section reveal">
+        <div class="section-header">
+            <h2 class="section-title">Play Gesture-Controlled Games</h2>
+            <p class="section-description">Experience the future of gaming with our collection of games designed for gesture control</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="javascript:void(0);" onclick="redirectToGames()" class="cta-button">Enter Game World</a>
+        </div>
+    </section>
+    
+    <script>
+        function redirectToGames() {
+            // Set a flag in localStorage to indicate we should scroll to games section
+            localStorage.setItem('scrollToGames', 'true');
+            // Redirect to movies page
+            window.location.href = '/movies';
+        }
+    </script>
+    
+
+    
+    <!-- CTA section -->
+    <section class="cta-section reveal">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Experience the Future?</h2>
+            <p class="cta-subtitle">Join thousands of users who are already enjoying hands-free video control with WINDSURF.</p>
+            <a href="/movies" class="cta-button">Get Started Now</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">WINDSURF</div>
+                <p class="footer-description">The future of video interaction is here. Control your videos with simple hand gestures.</p>
+            </div>
+            
+            <div>
+                <h3 class="footer-heading">Navigation</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="/">Home</a></li>
+                    <li class="footer-link"><a href="/movies">Movies</a></li>
+                    <li class="footer-link"><a href="/features">Features</a></li>
+                    <li class="footer-link"><a href="#games">Games</a></li>
+                    <li class="footer-link"><a href="/about">About</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="footer-heading">Resources</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Documentation</a></li>
+                    <li class="footer-link"><a href="#">API</a></li>
+                    <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                    <li class="footer-link"><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="footer-heading">Contact</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Support</a></li>
+                    <li class="footer-link"><a href="#">Feedback</a></li>
+                    <li class="footer-link"><a href="#">Partnership</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div>© 2023 WINDSURF. All rights reserved.</div>
+            <div>Made with ❤️ by AI</div>
+        </div>
+    </footer>
+    
+    <!-- Scroll reveal script -->
+    <script>
+        // Scroll reveal animation
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', revealOnScroll);
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            revealOnScroll();
+        });
+    </script>
+
+    <div id="upload-modal" class="upload-modal">
+        <div class="modal-content card-3d">
+            <div class="modal-header">
+                <h2>Upload Video</h2>
+                <button class="close-btn hover-glow">&times;</button>
+            </div>
+            <form id="upload-form">
+                <div class="file-input-container hover-glow">
+                    <label for="video-file" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to select or drag video here</span>
+                    </label>
+                    <input type="file" id="video-file" accept="video/*" hidden>
+                </div>
+                <div class="progress-container" hidden>
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <p class="progress-text">Uploading: 0%</p>
+                </div>
+                <button type="submit" class="upload-btn hover-glow button-hover click-effect">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/games.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hero-background.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.querySelector('.custom-cursor');
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cards = document.querySelectorAll('.card-3d');
+
+            // Custom cursor movement
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                cursorDot.style.left = e.clientX + 'px';
+                cursorDot.style.top = e.clientY + 'px';
+            });
+
+            // 3D card effect
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const angleX = (y - centerY) / 20;
+                    const angleY = (centerX - x) / 20;
+                    
+                    card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0) rotateY(0)';
+                });
+            });
+
+            const toggleGestureBtn = document.getElementById('toggle-gesture');
+            const uploadBtn = document.getElementById('upload-video');
+            const uploadModal = document.getElementById('upload-modal');
+            const closeBtn = document.querySelector('.close-btn');
+            const uploadForm = document.getElementById('upload-form');
+            const fileInput = document.getElementById('video-file');
+            const progressBar = document.querySelector('.progress');
+            const progressText = document.querySelector('.progress-text');
+            const progressContainer = document.querySelector('.progress-container');
+
+            // Toggle gesture control
+            toggleGestureBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/toggle_gesture_control', {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+                    toggleGestureBtn.classList.toggle('active', data.enabled);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // Upload modal
+            uploadBtn.addEventListener('click', () => {
+                uploadModal.style.display = 'flex';
+            });
+
+            closeBtn.addEventListener('click', () => {
+                uploadModal.style.display = 'none';
+            });
+
+            // File upload
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('video', file);
+
+                progressContainer.hidden = false;
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                        onUploadProgress: (progressEvent) => {
+                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            progressBar.style.width = percentCompleted + '%';
+                            progressText.textContent = `Uploading: ${percentCompleted}%`;
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        const video = document.getElementById('main-video');
+                        video.src = `/uploads/${data.filename}`;
+                        uploadModal.style.display = 'none';
+                    } else {
+                        alert('Upload failed: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Upload failed. Please try again.');
+                }
+                progressContainer.hidden = true;
+            });
+
+            // Scroll animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
+
+            // Particle animation
+            const particlesContainer = document.querySelector('.particles-container');
+            
+            // Particle types and their properties
+            const particleTypes = [
+                {
+                    class: 'particle-dot',
+                    size: () => Math.random() * 3 + 2,
+                    frequency: 300
+                },
+                {
+                    class: 'particle-star',
+                    size: () => Math.random() * 2 + 1,
+                    frequency: 1000
+                },
+                {
+                    class: 'particle-trail',
+                    size: () => Math.random() * 4 + 2,
+                    frequency: 800
+                },
+                {
+                    class: 'particle-pulse',
+                    size: () => Math.random() * 5 + 3,
+                    frequency: 1500
+                }
+            ];
+
+            // Create different types of particles
+            particleTypes.forEach(type => {
+                setInterval(() => {
+                    createParticle(type.class, type.size());
+                }, type.frequency);
+            });
+
+            function createParticle(className, size) {
+                const particle = document.createElement('div');
+                particle.className = `particle ${className}`;
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Set size
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Random delay
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                
+                particlesContainer.appendChild(particle);
+                
+                // Remove particle after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 5000);
+            }
+
+            // Mouse trail effect
+            const trailCount = 20;
+            const trails = [];
+            
+            for (let i = 0; i < trailCount; i++) {
+                const trail = document.createElement('div');
+                trail.className = 'mouse-trail';
+                document.body.appendChild(trail);
+                trails.push({
+                    element: trail,
+                    x: 0,
+                    y: 0,
+                    alpha: 0
+                });
+            }
+
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function updateTrails() {
+                let i = 0;
+                trails.forEach(trail => {
+                    const delay = i * 2;
+                    const dx = mouseX - trail.x;
+                    const dy = mouseY - trail.y;
+                    
+                    trail.x += dx * 0.1;
+                    trail.y += dy * 0.1;
+                    trail.alpha = Math.max(0, trail.alpha - 0.012);
+                    
+                    trail.element.style.left = trail.x + 'px';
+                    trail.element.style.top = trail.y + 'px';
+                    trail.element.style.opacity = trail.alpha;
+                    
+                    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                        trail.alpha = 0.3;
+                    }
+                    
+                    i++;
+                });
+                
+                requestAnimationFrame(updateTrails);
+            }
+            
+            updateTrails();
+
+            // Enhanced Gesture Controls for Movie Playback
+            let videoControlsEnabled = false;
+            const videoPlayer = document.getElementById('main-video');
+
+            function updateVideoPlayback(gesture) {
+                if (!videoControlsEnabled) return;
+
+                switch(gesture) {
+                    case 'palm':
+                        videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause();
+                        break;
+                    case 'fist':
+                        videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
+                        break;
+                    case 'thumbs_up':
+                        videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
+                        break;
+                    case 'pointing_left':
+                        videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+                        break;
+                    case 'pointing_right':
+                        videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+                        break;
+                }
+            }
+
+            // Connect gesture recognition to video controls
+            document.getElementById('toggle-gesture').addEventListener('click', () => {
+                videoControlsEnabled = !videoControlsEnabled;
+                document.getElementById('toggle-gesture').classList.toggle('active');
+            });
+        });
+    </script>
+
+    <!-- Game Modal for launching games -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-modal-content">
+            <div class="game-modal-header">
+                <h2 id="gameTitle">Game Title</h2>
+                <button class="close-game-btn">&times;</button>
+            </div>
+            <div class="game-modal-body">
+                <div class="game-loading">
+                    <div class="game-loading-spinner"></div>
+                    <p>Loading game...</p>
+                </div>
+                <div class="game-container" id="gameContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this script at the end of the body to fix game functionality -->
+    <script>
+        // Game functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameModal = document.getElementById('gameModal');
+            const gameTitle = document.getElementById('gameTitle');
+            const gameContainer = document.getElementById('gameContainer');
+            const gameLoading = document.querySelector('.game-loading');
+            const closeGameBtn = document.querySelector('.close-game-btn');
+            
+            // Game data
+            const games = {
+                'hand-pong': {
+                    title: 'Hand Pong',
+                    html: `
+                        <div class="pong-game">
+                            <div class="pong-score">Score: <span id="pongScore">0</span></div>
+                            <canvas id="pongCanvas" width="800" height="500"></canvas>
+                            <div class="pong-instructions">
+                                <p>Move your hand left and right to control the paddle</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initHandPong
+                },
+                'gesture-hero': {
+                    title: 'Gesture Hero',
+                    html: `
+                        <div class="gesture-hero-game">
+                            <div class="hero-score">Score: <span id="heroScore">0</span></div>
+                            <div class="hero-track" id="heroTrack">
+                                <div class="hero-gesture-container" id="gestureContainer"></div>
+                                <div class="hero-target-line"></div>
+                            </div>
+                            <div class="hero-instructions">
+                                <p>Make the gesture shown when it reaches the target line</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initGestureHero
+                },
+                'air-painter': {
+                    title: 'Air Painter',
+                    html: `
+                        <div class="air-painter-game">
+                            <div class="painter-toolbar">
+                                <div class="color-picker">
+                                    <div class="color-option active" data-color="#ff0055" style="background-color: #ff0055;"></div>
+                                    <div class="color-option" data-color="#0099ff" style="background-color: #0099ff;"></div>
+                                    <div class="color-option" data-color="#4ecca3" style="background-color: #4ecca3;"></div>
+                                    <div class="color-option" data-color="#ffcc00" style="background-color: #ffcc00;"></div>
+                                    <div class="color-option" data-color="#ffffff" style="background-color: #ffffff;"></div>
+                                </div>
+                                <button id="clearCanvas">Clear Canvas</button>
+                            </div>
+                            <canvas id="paintCanvas" width="800" height="500"></canvas>
+                            <div class="painter-instructions">
+                                <p>Point with your index finger to draw. Make a fist to stop drawing.</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initAirPainter
+                },
+                'gesture-ninja': {
+                    title: 'Gesture Ninja',
+                    html: `
+                        <div class="ninja-game">
+                            <div class="ninja-score">Score: <span id="ninjaScore">0</span></div>
+                            <canvas id="ninjaCanvas" width="800" height="500"></canvas>
+                            <div class="ninja-instructions">
+                                <p>Swipe your hand to slice objects. Avoid bombs!</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initGestureNinja
+                },
+                'memory-match': {
+                    title: 'Memory Match',
+                    html: `
+                        <div class="memory-game">
+                            <div class="memory-stats">
+                                <div>Pairs: <span id="memoryPairs">0</span>/<span id="memoryTotal">8</span></div>
+                                <div>Moves: <span id="memoryMoves">0</span></div>
+                            </div>
+                            <div class="memory-board" id="memoryBoard"></div>
+                            <div class="memory-instructions">
+                                <p>Point at cards to flip them and find matching pairs</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initMemoryMatch
+                },
+                'gesture-racer': {
+                    title: 'Gesture Racer',
+                    html: `
+                        <div class="racer-game">
+                            <div class="racer-stats">
+                                <div>Speed: <span id="racerSpeed">0</span> mph</div>
+                                <div>Distance: <span id="racerDistance">0</span> m</div>
+                            </div>
+                            <canvas id="racerCanvas" width="800" height="500"></canvas>
+                            <div class="racer-instructions">
+                                <p>Tilt your hand to steer. Make a fist for boost!</p>
+                            </div>
+                        </div>
+                    `,
+                    init: initGestureRacer
+                }
+            };
+            
+            // Open game modal when play button is clicked
+            document.querySelectorAll('.play-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const gameId = this.getAttribute('data-game');
+                    const game = games[gameId];
+                    
+                    if (game) {
+                        gameTitle.textContent = game.title;
+                        gameContainer.innerHTML = game.html;
+                        gameModal.style.display = 'flex';
+                        gameLoading.style.display = 'flex';
+                        
+                        // Simulate loading time
+                        setTimeout(() => {
+                            gameLoading.style.display = 'none';
+                            if (typeof game.init === 'function') {
+                                game.init();
+                            }
+                        }, 1500);
+                    }
+                });
+            });
+            
+            // Close game modal
+            closeGameBtn.addEventListener('click', function() {
+                gameModal.style.display = 'none';
+                gameContainer.innerHTML = '';
+            });
+            
+            // Close modal if clicked outside
+            gameModal.addEventListener('click', function(e) {
+                if (e.target === gameModal) {
+                    gameModal.style.display = 'none';
+                    gameContainer.innerHTML = '';
+                }
+            });
+            
+            // Game initialization functions
+            function initHandPong() {
+                const canvas = document.getElementById('pongCanvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                let score = 0;
+                
+                // Game elements
+                const paddle = {
+                    x: canvas.width / 2 - 50,
+                    y: canvas.height - 20,
+                    width: 100,
+                    height: 10,
+                    speed: 8
+                };
+                
+                const ball = {
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    radius: 10,
+                    speedX: 5,
+                    speedY: 5
+                };
+                
+                // Create a DOM element for the paddle to control with gestures
+                const paddleElement = document.createElement('div');
+                paddleElement.className = 'pong-paddle';
+                paddleElement.style.position = 'absolute';
+                paddleElement.style.width = paddle.width + 'px';
+                paddleElement.style.height = paddle.height + 'px';
+                paddleElement.style.backgroundColor = 'transparent';
+                paddleElement.style.left = paddle.x + 'px';
+                paddleElement.style.top = paddle.y + 'px';
+                canvas.parentNode.appendChild(paddleElement);
+                
+                // Set initial game state
+                canvas.dataset.gameRunning = 'true';
+                
+                // Game loop
+                function gameLoop() {
+                    // Clear canvas
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Only update game if running
+                    if (canvas.dataset.gameRunning === 'true') {
+                        // Update ball position
+                        ball.x += ball.speedX;
+                        ball.y += ball.speedY;
+                        
+                        // Ball collision with walls
+                        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                            ball.speedX = -ball.speedX;
+                        }
+                        
+                        if (ball.y - ball.radius < 0) {
+                            ball.speedY = -ball.speedY;
+                        }
+                        
+                        // Ball collision with paddle
+                        if (
+                            ball.y + ball.radius > paddle.y &&
+                            ball.x > paddle.x &&
+                            ball.x < paddle.x + paddle.width
+                        ) {
+                            ball.speedY = -ball.speedY;
+                            score++;
+                            document.getElementById('pongScore').textContent = score;
+                        }
+                        
+                        // Ball out of bounds
+                        if (ball.y + ball.radius > canvas.height) {
+                            // Reset ball
+                            ball.x = canvas.width / 2;
+                            ball.y = canvas.height / 2;
+                            ball.speedX = 5 * (Math.random() > 0.5 ? 1 : -1);
+                            ball.speedY = -5;
+                            
+                            // Decrease score
+                            score = Math.max(0, score - 1);
+                            document.getElementById('pongScore').textContent = score;
+                        }
+                        
+                        // Update paddle position from DOM element
+                        paddle.x = parseInt(paddleElement.style.left || '0');
+                    }
+                    
+                    // Draw paddle
+                    ctx.fillStyle = '#4ecca3';
+                    ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+                    
+                    // Draw ball
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4ecca3';
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                    // Continue game loop
+                    requestAnimationFrame(gameLoop);
+                }
+                
+                // Start game loop
+                gameLoop();
+                
+                // Mouse control for paddle
+                canvas.addEventListener('mousemove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    
+                    // Update paddle position
+                    paddle.x = mouseX - paddle.width / 2;
+                    
+                    // Keep paddle within canvas
+                    if (paddle.x < 0) {
+                        paddle.x = 0;
+                    } else if (paddle.x + paddle.width > canvas.width) {
+                        paddle.x = canvas.width - paddle.width;
+                    }
+                    
+                    // Update paddle element position
+                    paddleElement.style.left = paddle.x + 'px';
+                });
+            }
+            
+            function initGestureHero() {
+                const track = document.getElementById('heroTrack');
+                const container = document.getElementById('gestureContainer');
+                if (!track || !container) return;
+                
+                let score = 0;
+                
+                // Style the track
+                track.style.position = 'relative';
+                track.style.width = '100%';
+                track.style.height = '400px';
+                track.style.background = 'rgba(15, 23, 42, 0.7)';
+                track.style.borderRadius = '8px';
+                track.style.overflow = 'hidden';
+                
+                // Style the gesture container
+                container.style.position = 'absolute';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.width = '100%';
+                container.style.height = '100%';
+                
+                // Add target line
+                const targetLine = document.querySelector('.hero-target-line');
+                targetLine.style.position = 'absolute';
+                targetLine.style.top = '75%';
+                targetLine.style.left = '0';
+                targetLine.style.width = '100%';
+                targetLine.style.height = '3px';
+                targetLine.style.background = 'linear-gradient(90deg, #ff0055, #0099ff)';
+                targetLine.style.boxShadow = '0 0 10px rgba(255, 0, 85, 0.7)';
+                
+                // Gesture types
+                const gestures = [
+                    { name: 'Open Palm', emoji: '✋' },
+                    { name: 'Fist', emoji: '✊' },
+                    { name: 'Point Right', emoji: '👉' },
+                    { name: 'Point Left', emoji: '👈' },
+                    { name: 'Thumbs Up', emoji: '✌️' }
+                ];
+                
+                // Spawn a new gesture
+                function spawnGesture() {
+                    const gesture = gestures[Math.floor(Math.random() * gestures.length)];
+                    const element = document.createElement('div');
+                    element.className = 'hero-gesture';
+                    element.innerHTML = `<div class="hero-gesture-emoji">${gesture.emoji}</div>`;
+                    element.dataset.gesture = gesture.name;
+                    
+                    // Style the gesture
+                    element.style.position = 'absolute';
+                    element.style.top = '-80px';
+                    element.style.left = `${Math.random() * 80 + 10}%`;
+                    element.style.width = '60px';
+                    element.style.height = '60px';
+                    element.style.background = 'rgba(139, 92, 246, 0.3)';
+                    element.style.borderRadius = '50%';
+                    element.style.display = 'flex';
+                    element.style.alignItems = 'center';
+                    element.style.justifyContent = 'center';
+                    element.style.fontSize = '30px';
+                    element.style.boxShadow = '0 0 15px rgba(139, 92, 246, 0.5)';
+                    element.style.animation = 'moveDown 3s linear forwards';
+                    
+                    container.appendChild(element);
+                    
+                    // Add animation keyframes
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes moveDown {
+                            0% { top: -80px; }
+                            100% { top: 100%; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    // Check if gesture hits target line
+                    let checked = false;
+                    const checkInterval = setInterval(() => {
+                        if (!element.isConnected) {
+                            clearInterval(checkInterval);
+                            return;
+                        }
+                        
+                        const rect = element.getBoundingClientRect();
+                        const targetRect = targetLine.getBoundingClientRect();
+                        
+                        if (!checked && rect.top <= targetRect.top && rect.bottom >= targetRect.top) {
+                            checked = true;
+                            // Here you would check if the user made the correct gesture
+                            // For now, we'll just randomly succeed or fail
+                            if (Math.random() > 0.5) {
+                                element.style.background = 'rgba(16, 185, 129, 0.5)';
+                                element.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.8)';
+                                score += 100;
+                            } else {
+                                element.style.background = 'rgba(239, 68, 68, 0.5)';
+                                element.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.8)';
+                            }
+                            document.getElementById('heroScore').textContent = score;
+                        }
+                    }, 100);
+                    
+                    // Remove gesture after animation
+                    setTimeout(() => {
+                        element.remove();
+                        clearInterval(checkInterval);
+                    }, 3000);
+                }
+                
+                // Start spawning gestures
+                const spawnInterval = setInterval(spawnGesture, 2000);
+                
+                // Cleanup when game closes
+                document.querySelector('.close-game-btn').addEventListener('click', () => {
+                    clearInterval(spawnInterval);
+                });
+            }
+            
+            function initAirPainter() {
+                const canvas = document.getElementById('paintCanvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+                let currentColor = '#ff0055';
+                
+                // Set canvas background
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Color picker
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        currentColor = this.dataset.color;
+                        document.querySelectorAll('.color-option').forEach(opt => {
+                            opt.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                });
+                
+                // Clear canvas
+                document.getElementById('clearCanvas').addEventListener('click', function() {
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                });
+                
+                // Draw on canvas with mouse (for testing)
+                canvas.addEventListener('mousedown', function(e) {
+                    isDrawing = true;
+                    [lastX, lastY] = [e.offsetX, e.offsetY];
+                });
+                
+                canvas.addEventListener('mousemove', function(e) {
+                    if (!isDrawing) return;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(e.offsetX, e.offsetY);
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineWidth = 5;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                    
+                    [lastX, lastY] = [e.offsetX, e.offsetY];
+                });
+                
+                canvas.addEventListener('mouseup', () => isDrawing = false);
+                canvas.addEventListener('mouseout', () => isDrawing = false);
+            }
+            
+            function initGestureNinja() {
+                const canvas = document.getElementById('ninjaCanvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas background
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw game title
+                ctx.font = '30px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText('Gesture Ninja', canvas.width / 2, canvas.height / 2 - 50);
+                
+                // Draw instructions
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('Swipe your hand to slice objects', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Coming soon!', canvas.width / 2, canvas.height / 2 + 30);
+            }
+            
+            function initMemoryMatch() {
+                const board = document.getElementById('memoryBoard');
+                if (!board) return;
+                
+                // Style the board
+                board.style.display = 'grid';
+                board.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                board.style.gap = '10px';
+                board.style.width = '100%';
+                board.style.maxWidth = '600px';
+                board.style.margin = '0 auto';
+                board.style.padding = '20px';
+                
+                // Card symbols
+                const symbols = ['🎮', '🎯', '🎲', '🎭', '🎨', '🎬', '🎤', '🎧'];
+                const cards = [...symbols, ...symbols];
+                
+                // Shuffle cards
+                cards.sort(() => Math.random() - 0.5);
+                
+                // Create cards
+                cards.forEach((symbol, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'memory-card';
+                    card.dataset.symbol = symbol;
+                    card.dataset.index = index;
+                    
+                    // Style the card
+                    card.style.height = '120px';
+                    card.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                    card.style.borderRadius = '8px';
+                    card.style.display = 'flex';
+                    card.style.alignItems = 'center';
+                    card.style.justifyContent = 'center';
+                    card.style.fontSize = '40px';
+                    card.style.cursor = 'pointer';
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'rotateY(180deg)';
+                    card.style.position = 'relative';
+                    
+                    // Create card back
+                    const cardBack = document.createElement('div');
+                    cardBack.className = 'card-back';
+                    cardBack.textContent = '?';
+                    
+                    // Style card back
+                    cardBack.style.position = 'absolute';
+                    cardBack.style.top = '0';
+                    cardBack.style.left = '0';
+                    cardBack.style.width = '100%';
+                    cardBack.style.height = '100%';
+                    cardBack.style.display = 'flex';
+                    cardBack.style.alignItems = 'center';
+                    cardBack.style.justifyContent = 'center';
+                    cardBack.style.fontSize = '40px';
+                    cardBack.style.color = '#ffffff';
+                    cardBack.style.backfaceVisibility = 'hidden';
+                    
+                    // Create card front
+                    const cardFront = document.createElement('div');
+                    cardFront.className = 'card-front';
+                    cardFront.textContent = symbol;
+                    
+                    // Style card front
+                    cardFront.style.position = 'absolute';
+                    cardFront.style.top = '0';
+                    cardFront.style.left = '0';
+                    cardFront.style.width = '100%';
+                    cardFront.style.height = '100%';
+                    cardFront.style.display = 'flex';
+                    cardFront.style.alignItems = 'center';
+                    cardFront.style.justifyContent = 'center';
+                    cardFront.style.fontSize = '40px';
+                    cardFront.style.transform = 'rotateY(180deg)';
+                    cardFront.style.backfaceVisibility = 'hidden';
+                    
+                    card.appendChild(cardBack);
+                    card.appendChild(cardFront);
+                    board.appendChild(card);
+                    
+                    // Add click event
+                    card.addEventListener('click', flipCard);
+                });
+                
+                let hasFlippedCard = false;
+                let lockBoard = false;
+                let firstCard, secondCard;
+                let moves = 0;
+                let pairs = 0;
+                
+                function flipCard() {
+                    if (lockBoard) return;
+                    if (this === firstCard) return;
+                    
+                    this.style.transform = 'rotateY(0)';
+                    
+                    if (!hasFlippedCard) {
+                        // First card flipped
+                        hasFlippedCard = true;
+                        firstCard = this;
+                        return;
+                    }
+                    
+                    // Second card flipped
+                    secondCard = this;
+                    moves++;
+                    document.getElementById('memoryMoves').textContent = moves;
+                    
+                    checkForMatch();
+                }
+                
+                function checkForMatch() {
+                    let isMatch = firstCard.dataset.symbol === secondCard.dataset.symbol;
+                    
+                    if (isMatch) {
+                        disableCards();
+                        pairs++;
+                        document.getElementById('memoryPairs').textContent = pairs;
+                    } else {
+                        unflipCards();
+                    }
+                }
+                
+                function disableCards() {
+                    firstCard.removeEventListener('click', flipCard);
+                    secondCard.removeEventListener('click', flipCard);
+                    
+                    resetBoard();
+                }
+                
+                function unflipCards() {
+                    lockBoard = true;
+                    
+                    setTimeout(() => {
+                        firstCard.style.transform = 'rotateY(180deg)';
+                        secondCard.style.transform = 'rotateY(180deg)';
+                        
+                        resetBoard();
+                    }, 1000);
+                }
+                
+                function resetBoard() {
+                    [hasFlippedCard, lockBoard] = [false, false];
+                    [firstCard, secondCard] = [null, null];
+                }
+            }
+            
+            function initGestureRacer() {
+                const canvas = document.getElementById('racerCanvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas background
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw game title
+                ctx.font = '30px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText('Gesture Racer', canvas.width / 2, canvas.height / 2 - 50);
+                
+                // Draw instructions
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('Tilt your hand to steer', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Coming soon!', canvas.width / 2, canvas.height / 2 + 30);
+            }
+        });
+    </script>
+
+    <!-- Add this JavaScript to handle game gesture controls -->
+    <script>
+        // Add this JavaScript to handle game gesture controls
+        let gameGestureEventSource = null;
+
+        document.getElementById('enable-game-gestures').addEventListener('click', function() {
+            const isActive = this.classList.contains('active');
+            
+            if (isActive) {
+                // Disable gesture control
+                this.classList.remove('active');
+                this.querySelector('.button-text').textContent = 'Enable Gesture Control';
+                this.querySelector('.status-dot').classList.remove('connected');
+                this.querySelector('.status-text').textContent = 'Gesture control disabled';
+                this.querySelector('.camera-overlay').style.opacity = '1';
+                stopGameGestureStream();
+            } else {
+                // Enable gesture control
+                this.classList.add('active');
+                this.querySelector('.button-text').textContent = 'Disable Gesture Control';
+                this.querySelector('.status-dot').classList.add('connected');
+                this.querySelector('.status-text').textContent = 'Connecting to camera...';
+                this.querySelector('.camera-overlay').style.opacity = '0';
+                startGameGestureStream();
+            }
+        });
+
+        function startGameGestureStream() {
+            if (gameGestureEventSource) {
+                gameGestureEventSource.close();
+            }
+            
+            // Show the camera preview
+            const processedFeed = document.getElementById('game-processed-feed');
+            if (processedFeed) {
+                processedFeed.style.display = 'block';
+            }
+            
+            // Update debug info
+            const debugInfo = document.getElementById('game-debug-info');
+            if (debugInfo) {
+                debugInfo.textContent = 'Connecting to camera...';
+            }
+            
+            // Create event source
+            gameGestureEventSource = new EventSource('/video_feed');
+            
+            gameGestureEventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    // Update the debug info
+                    if (debugInfo) {
+                        if (data.gesture) {
+                            debugInfo.textContent = `Detected: ${data.gesture}`;
+                        } else if (data.status === 'waiting') {
+                            debugInfo.textContent = 'Waiting for gesture data...';
+                        } else if (data.error) {
+                            debugInfo.textContent = `Error: ${data.error}`;
+                        }
+                    }
+                    
+                    // Update the processed feed image if available
+                    if (data.image && processedFeed) {
+                        processedFeed.src = data.image;
+                    }
+                    
+                    // Apply gesture controls to the active game
+                    if (data.gesture) {
+                        applyGameGestureControl(data.gesture);
+                    }
+                } catch (error) {
+                    console.error('Error processing gesture data:', error);
+                    if (debugInfo) {
+                        debugInfo.textContent = 'Error processing gesture data';
+                    }
+                }
+            };
+            
+            gameGestureEventSource.onerror = function(error) {
+                console.error('Gesture stream error:', error);
+                if (debugInfo) {
+                    debugInfo.textContent = 'Connection error. Retrying...';
+                }
+            };
+        }
+
+        function stopGameGestureStream() {
+            if (gameGestureEventSource) {
+                gameGestureEventSource.close();
+                gameGestureEventSource = null;
+                
+                // Hide the processed feed
+                const processedFeed = document.getElementById('game-processed-feed');
+                if (processedFeed) {
+                    processedFeed.style.display = 'none';
+                }
+                
+                // Reset debug info
+                const debugInfo = document.getElementById('game-debug-info');
+                if (debugInfo) {
+                    debugInfo.textContent = 'Gesture control disabled';
+                }
+            }
+        }
+
+        function applyGameGestureControl(gesture) {
+            // Get the currently active game
+            const activeGame = document.querySelector('.game-modal.active');
+            if (!activeGame) return;
+            
+            // Show gesture feedback
+            const gestureDisplay = document.createElement('div');
+            gestureDisplay.className = 'game-gesture-display';
+            gestureDisplay.textContent = gesture.toUpperCase();
+            activeGame.appendChild(gestureDisplay);
+            
+            setTimeout(() => {
+                gestureDisplay.remove();
+            }, 1000);
+            
+            // Apply different controls based on the active game
+            const gameId = activeGame.dataset.gameId;
+            
+            switch(gameId) {
+                case 'hand-pong':
+                    handlePongGesture(gesture);
+                    break;
+                case 'gesture-hero':
+                    handleGestureHeroGesture(gesture);
+                    break;
+                case 'air-painter':
+                    handleAirPainterGesture(gesture);
+                    break;
+                case 'memory-match':
+                    handleMemoryMatchGesture(gesture);
+                    break;
+                case 'gesture-racer':
+                    handleRacerGesture(gesture);
+                    break;
+                case 'hand-shooter':
+                    handleShooterGesture(gesture);
+                    break;
+            }
+        }
+
+        // Game-specific gesture handlers
+        function handlePongGesture(gesture) {
+            const canvas = document.getElementById('pongCanvas');
+            if (!canvas) return;
+            
+            const paddleElement = document.querySelector('.pong-paddle');
+            if (!paddleElement) return;
+            
+            const canvasWidth = canvas.width;
+            
+            switch(gesture) {
+                case 'point_right':
+                    // Move paddle right
+                    let rightPos = parseInt(paddleElement.style.left || '0') + 30;
+                    paddleElement.style.left = Math.min(rightPos, canvasWidth - 100) + 'px';
+                    break;
+                case 'point_left':
+                    // Move paddle left
+                    let leftPos = parseInt(paddleElement.style.left || '0') - 30;
+                    paddleElement.style.left = Math.max(leftPos, 0) + 'px';
+                    break;
+                case 'palm':
+                    // Start/pause game
+                    const gameRunning = canvas.dataset.gameRunning === 'true';
+                    canvas.dataset.gameRunning = !gameRunning;
+                    break;
+            }
+        }
+
+        // Add similar handlers for other games
+        function handleGestureHeroGesture(gesture) {
+            // Implementation for Gesture Hero game
+            console.log('Gesture Hero control:', gesture);
+        }
+
+        function handleAirPainterGesture(gesture) {
+            // Implementation for Air Painter game
+            console.log('Air Painter control:', gesture);
+        }
+
+        function handleMemoryMatchGesture(gesture) {
+            // Implementation for Memory Match game
+            console.log('Memory Match control:', gesture);
+        }
+
+        function handleRacerGesture(gesture) {
+            // Implementation for Gesture Racer game
+            console.log('Gesture Racer control:', gesture);
+        }
+
+        function handleShooterGesture(gesture) {
+            // Implementation for Hand Shooter game
+            console.log('Hand Shooter control:', gesture);
+        }
+    </script>
+
+    <!-- Add this JavaScript for smooth scrolling to the games section -->
+    <script>
+        // Add this JavaScript for smooth scrolling to the games section
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all navbar links
+            const navLinks = document.querySelectorAll('.navbar-link');
+            
+            // Add click event listeners to each link
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Check if the link has a hash (indicating an in-page link)
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        
+                        // Get the target element
+                        const targetId = href.substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        
+                        if (targetElement) {
+                            // Smooth scroll to the target element
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 100, // Offset for the navbar
+                                behavior: 'smooth'
+                            });
+                            
+                            // Update active state in navbar
+                            navLinks.forEach(navLink => navLink.classList.remove('active'));
+                            this.classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            // Add event listener for the Enter Game World button
+            const enterGameWorldBtn = document.getElementById('enter-game-world');
+            if (enterGameWorldBtn) {
+                enterGameWorldBtn.addEventListener('click', function(e) {
+                    // The actual scrolling will happen on the movies page
+                    // We're just adding the hash to the URL
+                    // The scroll behavior is handled by JavaScript on the movies page
+                    localStorage.setItem('scrollToGames', 'true');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
