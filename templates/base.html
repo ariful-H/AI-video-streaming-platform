@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}QuantumGaze{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base styles for all pages */
         :root {
             --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
             --secondary-gradient: linear-gradient(135deg, #ec4899, #8b5cf6);
-            --text-gradient: linear-gradient(135deg, #ffffff, #d1d5db);
+            --accent-gradient: linear-gradient(135deg, #4ecca3, #3b82f6);
             --surface-dark: #0f172a;
             --surface-darker: #0a0f1d;
             --surface-lighter: #1e293b;
             --accent-purple: #8b5cf6;
             --accent-pink: #ec4899;
+            --accent-teal: #4ecca3;
             --text-light: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -34,7 +38,7 @@
             position: relative;
         }
         
-        /* Grid background */
+        /* Modern Grid Background */
         .grid-background {
             position: fixed;
             top: 0;
@@ -48,7 +52,7 @@
             z-index: -2;
         }
         
-        /* Gradient background */
+        /* Animated Gradient Background */
         .gradient-background {
             position: fixed;
             top: 0;
@@ -61,33 +65,19 @@
                 radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1), transparent 60%);
             z-index: -1;
             opacity: 0.8;
+            animation: gradientShift 15s ease infinite;
         }
         
-        /* Announcement bar */
-        .announcement-bar {
-            background: var(--primary-gradient);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: 500;
-            position: relative;
-            z-index: 100;
+        @keyframes gradientShift {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
         }
         
-        .announcement-bar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 8px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .announcement-bar a svg {
-            margin-left: 4px;
-        }
-        
-        /* Floating navbar */
+        /* Modern Navbar */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -101,18 +91,6 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-scrolled {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            background: rgba(15, 23, 42, 0.95);
-        }
-        
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
         }
         
         .navbar-brand {
@@ -124,386 +102,223 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-decoration: none;
         }
         
         .navbar-links {
             display: flex;
-            gap: 24px;
+            gap: 32px;
         }
         
         .navbar-link {
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s ease;
+            transition: all 0.3s ease;
             position: relative;
             padding: 8px 0;
         }
         
-        .navbar-link:hover, .navbar-link.active {
+        .navbar-link:hover {
             color: var(--text-light);
         }
         
-        .navbar-link.active::after {
+        .navbar-link::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100%;
+            width: 0;
             height: 2px;
-            background: var(--secondary-gradient);
-            border-radius: 2px;
-        }
-        
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .login-button {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .login-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .signup-button {
             background: var(--primary-gradient);
-            color: white;
-            text-decoration: none;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            transition: width 0.3s ease;
         }
         
-        .signup-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-        }
-        
-        .user-menu {
-            position: relative;
-        }
-        
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .user-avatar:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 8px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 200px;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .user-menu:hover .user-dropdown {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-        
-        .dropdown-item {
-            padding: 12px 16px;
-            color: var(--text-light);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-        
-        .dropdown-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .dropdown-divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 4px 0;
-        }
-        
-        /* Modal styles for auth forms */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .modal {
-            background: var(--surface-darker);
-            border-radius: 16px;
+        .navbar-link:hover::after {
             width: 100%;
-            max-width: 450px;
-            padding: 32px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transform: translateY(20px);
-            transition: all 0.3s ease;
         }
         
-        .modal-overlay.active .modal {
-            transform: translateY(0);
-        }
-        
-        .modal-header {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        
-        .modal-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: var(--text-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .modal-subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-        }
-        
-        .form-button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-        }
-        
-        .form-button:hover {
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-        
-        .form-footer {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        
-        .form-footer a {
+        /* Feature Badge */
+        .feature-badge {
+            background: rgba(139, 92, 246, 0.1);
             color: var(--accent-purple);
-            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-size: 12px;
             font-weight: 500;
+            margin-left: 8px;
         }
         
-        .close-modal {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        /* Quick Access Menu */
+        .quick-access {
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 100;
         }
         
-        .close-modal:hover {
+        .quick-action {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
-        /* Toast notifications */
-        .toast-container {
+        .quick-action:hover {
+            transform: translateY(-2px);
+            background: var(--surface-lighter);
+            border-color: var(--accent-purple);
+        }
+        
+        /* Theme Switcher */
+        .theme-switcher {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 2000;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 50px;
+            padding: 8px;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
         }
         
-        .toast {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 8px;
-            padding: 16px;
-            min-width: 300px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(100%);
-            opacity: 0;
+        .theme-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
         
-        .toast.active {
+        .theme-option:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Voice Control Indicator */
+        .voice-indicator {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 50px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .voice-indicator.active {
+            border-color: var(--accent-teal);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(78, 204, 163, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(78, 204, 163, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(78, 204, 163, 0);
+            }
+        }
+        
+        /* Achievement Toast */
+        .achievement-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .achievement-toast.show {
             transform: translateX(0);
-            opacity: 1;
         }
         
-        .toast-success {
-            border-left: 4px solid #10b981;
-        }
-        
-        .toast-error {
-            border-left: 4px solid #ef4444;
-        }
-        
-        .toast-icon {
-            width: 24px;
-            height: 24px;
+        .achievement-icon {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
+            background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 24px;
         }
         
-        .toast-success .toast-icon {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--surface-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
         }
         
-        .toast-error .toast-icon {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
+        .loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
         }
         
-        .toast-content {
-            flex: 1;
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-purple);
+            animation: spin 1s ease infinite;
         }
         
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .toast-message {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .toast-close:hover {
-            color: var(--text-light);
-        }
-        
-        /* Main content padding for fixed navbar */
-        .main-content {
-            padding-top: 80px; /* Adjust based on navbar height */
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
     {% block styles %}{% endblock %}
 </head>
-<body>
-    <!-- Background elements -->
+<body class="bg-animate">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Background Elements -->
     <div class="grid-background"></div>
     <div class="gradient-background"></div>
+    <div id="mouse-trail-container"></div>
     
     <!-- Announcement bar -->
     <div class="announcement-bar">
@@ -521,30 +336,22 @@
     <nav class="navbar">
         <div class="navbar-left">
             <a href="/" class="navbar-brand">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v8"></path>
-                    <path d="M12 18v4"></path>
-                    <path d="M4.93 10.93l2.83 2.83"></path>
-                    <path d="M16.24 16.24l2.83 2.83"></path>
-                    <path d="M2 12h4"></path>
-                    <path d="M18 12h4"></path>
-                    <path d="M4.93 13.07l2.83-2.83"></path>
-                    <path d="M16.24 7.76l2.83-2.83"></path>
-                </svg>
+                <i class="fas fa-cube"></i>
                 QuantumGaze
             </a>
             <div class="navbar-links">
                 <a href="/" class="navbar-link {% if request.path == '/' %}active{% endif %}">Home</a>
                 <a href="/movies" class="navbar-link {% if request.path == '/movies' %}active{% endif %}">Movies</a>
-                <a href="/features" class="navbar-link {% if request.path == '/features' %}active{% endif %}">Features</a>
-                <a href="/about" class="navbar-link {% if request.path == '/about' %}active{% endif %}">About</a>
+                <a href="/games" class="navbar-link {% if request.path == '/games' %}active{% endif %}">Games</a>
+                <a href="/analytics" class="navbar-link {% if request.path == '/analytics' %}active{% endif %}">Analytics <span class="feature-badge">New</span></a>
+                <a href="/collaborate" class="navbar-link {% if request.path == '/collaborate' %}active{% endif %}">Collaborate</a>
             </div>
         </div>
         <div class="navbar-right">
-            {% if current_user.is_authenticated %}
+            {% if current_user %}
                 <div class="user-menu">
                     <div class="user-avatar">
-                        {{ current_user.username[0] | upper }}
+                        {{ current_user[0] | upper }}
                     </div>
                     <div class="user-dropdown">
                         <div class="dropdown-item">
@@ -580,12 +387,52 @@
                 </div>
             {% else %}
                 <div class="auth-buttons">
-                    <a href="#" class="login-button" onclick="openModal('login-modal')">Login</a>
+                    <a href="{{ url_for('login_page') }}" class="login-button">Login</a>
                     <a href="#" class="signup-button" onclick="openModal('signup-modal')">Sign Up</a>
                 </div>
             {% endif %}
         </div>
     </nav>
+    
+    <!-- Quick Access Menu -->
+    <div class="quick-access">
+        <div class="quick-action" title="Voice Control" onclick="toggleVoiceControl()">
+            <i class="fas fa-microphone"></i>
+        </div>
+        <div class="quick-action" title="Gesture Control" onclick="toggleGestureControl()">
+            <i class="fas fa-hand-paper"></i>
+        </div>
+        <div class="quick-action" title="Achievements" onclick="showAchievements()">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="quick-action" title="Settings" onclick="openSettings()">
+            <i class="fas fa-cog"></i>
+        </div>
+    </div>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <div class="theme-option" style="background: var(--primary-gradient)" onclick="setTheme('default')"></div>
+        <div class="theme-option" style="background: linear-gradient(135deg, #3b82f6, #4ecca3)" onclick="setTheme('ocean')"></div>
+        <div class="theme-option" style="background: linear-gradient(135deg, #f43f5e, #f59e0b)" onclick="setTheme('sunset')"></div>
+    </div>
+
+    <!-- Voice Control Indicator -->
+    <div class="voice-indicator">
+        <i class="fas fa-microphone"></i>
+        <span>Voice Control Ready</span>
+    </div>
+
+    <!-- Achievement Toast -->
+    <div class="achievement-toast">
+        <div class="achievement-icon">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="achievement-content">
+            <h4>Achievement Unlocked!</h4>
+            <p>First Voice Command Used</p>
+        </div>
+    </div>
     
     <!-- Main content -->
     <div class="main-content">
@@ -732,6 +579,81 @@
                 });
             }
         }
+
+        // Mouse trail effect
+        const trailContainer = document.getElementById('mouse-trail-container');
+        
+        document.addEventListener('mousemove', (e) => {
+            const trail = document.createElement('div');
+            trail.className = 'mouse-trail';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            trailContainer.appendChild(trail);
+            
+            setTimeout(() => {
+                trail.remove();
+            }, 500);
+        });
+
+        // Add fade-in animation to all major sections
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section, .card, .hero-section');
+            sections.forEach(section => {
+                section.classList.add('fade-in');
+            });
+
+            // Add hover effects to interactive elements
+            const interactiveElements = document.querySelectorAll('button, .card, .navbar-link');
+            interactiveElements.forEach(element => {
+                element.classList.add('hover-effect');
+            });
+
+            // Add micro-interactions to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.classList.add('micro-bounce');
+            });
+        });
+
+        // Loading Screen
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.querySelector('.loading-screen').classList.add('fade-out');
+            }, 1000);
+        });
+
+        // Voice Control
+        function toggleVoiceControl() {
+            const indicator = document.querySelector('.voice-indicator');
+            indicator.classList.toggle('active');
+            // Add actual voice control implementation
+        }
+
+        // Theme Switcher
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            // Add theme switching logic
+        }
+
+        // Achievement System
+        function showAchievement(title, description) {
+            const toast = document.querySelector('.achievement-toast');
+            const titleEl = toast.querySelector('h4');
+            const descEl = toast.querySelector('p');
+            
+            titleEl.textContent = title;
+            descEl.textContent = description;
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize Features
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add initialization code for features
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,279 @@
+/* Gesture controls */
+.gesture-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.gesture-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.gesture-icon {
+    width: 30px;
+    height: 30px;
+    background-color: #1a73e8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gesture-text {
+    font-size: 14px;
+}
+
+.gesture-help {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 400px;
+    display: none;
+}
+
+.gesture-help.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.gesture-help h3 {
+    margin-top: 0;
+    color: #1a73e8;
+}
+
+.gesture-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.gesture-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.gesture-list .gesture-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+}
+
+.gesture-canvas {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    height: 240px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    z-index: 1000;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+.gesture-control-active .gesture-canvas {
+    display: block;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.gesture-guide {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    z-index: 1000;
+    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.gesture-control-active .gesture-guide {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.gesture-guide h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #4ecca3;
+}
+
+.gesture-guide ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.gesture-guide li {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gesture-guide .gesture-icon {
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+}
+
+/* Gesture Toggle Switch */
+.gesture-toggle {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.gesture-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.gesture-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.gesture-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .gesture-toggle-slider {
+    background-color: #4ecca3;
+}
+
+input:checked + .gesture-toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Gesture Feedback */
+.gesture-feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 1000;
+    animation: gestureFeedback 1s ease-out forwards;
+}
+
+@keyframes gestureFeedback {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    90% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+/* Hand Detection Markers */
+.hand-landmark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #4ecca3;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hand-connection {
+    position: absolute;
+    height: 2px;
+    background: rgba(78, 204, 163, 0.5);
+    transform-origin: left center;
+}
+
+/* Loading State */
+.gesture-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.gesture-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #4ecca3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+} 

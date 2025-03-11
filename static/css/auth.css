@@ -1,0 +1,193 @@
+:root {
+    --card-bg: #0f1117;
+    --input-bg: #1a1d25;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --accent-color: #22d3ee;
+    --button-gradient: linear-gradient(135deg, #22d3ee, #0ea5e9);
+    --glow-color: rgba(34, 211, 238, 0.2);
+    --error-color: #ef4444;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #0f172a, #020617);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    position: relative;
+}
+
+.login-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    animation: cardFloat 6s ease-in-out infinite;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, var(--glow-color), transparent 70%);
+    animation: glowRotate 10s linear infinite;
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    background: var(--button-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    letter-spacing: -0.025em;
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--input-bg);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--button-gradient);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--glow-color);
+}
+
+.register-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.register-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.glow-effect {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow-color), transparent 70%);
+    filter: blur(20px);
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
+.glow-1 { top: -75px; left: -75px; }
+.glow-2 { bottom: -75px; right: -75px; animation-delay: -2s; }
+
+.back-to-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.back-to-home:hover {
+    color: var(--accent-color);
+}
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes glowRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+} 

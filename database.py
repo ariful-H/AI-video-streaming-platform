@@ -1,59 +1,94 @@
-import hashlib
-import os
-import time
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
+import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-# Simple in-memory database for demonstration
-users = {}
+load_dotenv()
 
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-here')
+# SQLite Configuration
+DB_PATH = 'quantumgaze.db'
+JWT_SECRET = os.getenv('JWT_SECRET', 'your-secret-key-here')
+JWT_EXPIRATION = int(os.getenv('JWT_EXPIRATION', 3600))  # 1 hour by default
+
+def init_db():
+    """Initialize the SQLite database"""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Initialize database
+init_db()
 
 class User:
     @staticmethod
     def create_user(email, password):
-        # Check if user already exists
-        for user_id, user_data in users.items():
-            if user_data['email'] == email:
-                raise Exception("User with this email already exists")
-        
-        # Hash the password
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        
-        # Generate a simple user ID
-        user_id = str(len(users) + 1)
-        
-        # Store the user
-        users[user_id] = {
-            'email': email,
-            'password': hashed_password,
-            'created_at': time.time()
-        }
-        
-        return user_id
-    
+        """Create a new user in the database"""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        try:
+            c.execute('SELECT id FROM users WHERE email = ?', (email,))
+            if c.fetchone():
+                raise ValueError('Email already exists')
+            
+            hashed_password = generate_password_hash(password)
+            c.execute('INSERT INTO users (email, password) VALUES (?, ?)',
+                     (email, hashed_password))
+            conn.commit()
+            return c.lastrowid
+        finally:
+            conn.close()
+
     @staticmethod
     def verify_user(email, password):
-        # Hash the password
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        
-        # Check if user exists and password matches
-        for user_id, user_data in users.items():
-            if user_data['email'] == email and user_data['password'] == hashed_password:
-                return user_id
-        
-        return None
+        """Verify user credentials and return user ID if valid"""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        try:
+            c.execute('SELECT id, password FROM users WHERE email = ?', (email,))
+            user = c.fetchone()
+            
+            if user and check_password_hash(user[1], password):
+                return user[0]
+            return None
+        finally:
+            conn.close()
+
+    @staticmethod
+    def get_user(user_id):
+        """Get user by ID"""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        try:
+            c.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+            return c.fetchone()
+        finally:
+            conn.close()
 
 def create_token(user_id):
+    """Create a JWT token for the user"""
     payload = {
         'user_id': user_id,
-        'exp': time.time() + 86400  # 24 hours
+        'exp': datetime.utcnow() + timedelta(seconds=JWT_EXPIRATION)
     }
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    return token
+    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 
 def verify_token(token):
+    """Verify a JWT token and return user ID if valid"""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
         return payload['user_id']
-    except:
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
         return None

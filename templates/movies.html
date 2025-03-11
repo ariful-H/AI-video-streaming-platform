@@ -1,2330 +1,999 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player - QuantumGaze</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/gesture.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero-background.css') }}">
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <style>
-        /* Leonardo.ai inspired styles */
-        :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
-            --secondary-gradient: linear-gradient(135deg, #ec4899, #8b5cf6);
-            --text-gradient: linear-gradient(135deg, #ffffff, #d1d5db);
-            --surface-dark: #0f172a;
-            --surface-darker: #0a0f1d;
-            --surface-lighter: #1e293b;
-            --accent-purple: #8b5cf6;
-            --accent-pink: #ec4899;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background: var(--surface-dark);
-            color: var(--text-light);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            overflow-x: hidden;
+{% extends "base.html" %}
+
+{% block title %}Movies - QuantumGaze{% endblock %}
+
+{% block content %}
+<div class="movies-container">
+    <!-- Hero Section -->
+    <section class="movies-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Interactive Movie Experience</h1>
+            <p class="hero-subtitle">Control your entertainment with natural hand gestures</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Movies</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="gesture-preview">
+                <video id="gesture-demo" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='videos/gesture-demo.mp4') }}" type="video/mp4">
+                </video>
+                <div class="gesture-overlay">
+                    <div class="gesture-hint">
+                        <i class="fas fa-hand-paper"></i>
+                        <span>Wave to Start</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section class="games-section">
+        <div class="section-header">
+            <h2>Interactive Games</h2>
+            <p>Challenge yourself with gesture-controlled mini-games</p>
+        </div>
+        <div class="games-grid">
+            <!-- Hand Pong - Playable -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-table-tennis"></i>
+                    <div class="game-overlay">
+                        <button class="play-button" data-game="hand-pong">
+                            <i class="fas fa-play"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Hand Pong</h3>
+                    <p>Classic pong with a gesture twist. Control the paddle with hand movements.</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Easy</span>
+                        <span class="players">1-2 Players</span>
+                        <span class="status-badge playable">Playable</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture Hero - Playable -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-music"></i>
+                    <div class="game-overlay">
+                        <button class="play-button" data-game="gesture-hero">
+                            <i class="fas fa-play"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Gesture Hero</h3>
+                    <p>Follow the rhythm with hand gestures. Match the moves to the beat!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Medium</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge playable">Playable</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Painter - Playable -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-paint-brush"></i>
+                    <div class="game-overlay">
+                        <button class="play-button" data-game="air-painter">
+                            <i class="fas fa-play"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Air Painter</h3>
+                    <p>Create digital art with your hands. Paint in the air with gesture controls.</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Advanced</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge playable">Playable</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture Ninja - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-user-ninja"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Gesture Ninja</h3>
+                    <p>Slice through targets with precise hand movements. Avoid obstacles and chain combos!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Hard</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Drums - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-drum"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Air Drums</h3>
+                    <p>Play virtual drums in the air. Create beats with gesture-controlled drumming!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Medium</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture Racer - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-car-side"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Gesture Racer</h3>
+                    <p>Race through tracks using hand gestures to steer. Tilt and turn to victory!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Medium</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memory Match - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-brain"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Memory Match</h3>
+                    <p>Test your memory with gesture-controlled card matching. Find pairs to score!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Easy</span>
+                        <span class="players">1-2 Players</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Defense - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-shield-alt"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Air Defense</h3>
+                    <p>Protect your base from incoming threats. Use gestures to deploy defenses!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Hard</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture DJ - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-record-vinyl"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Gesture DJ</h3>
+                    <p>Mix tracks and create music with gesture controls. Become a virtual DJ!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Advanced</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Sculptor - Coming Soon -->
+            <div class="game-card">
+                <div class="game-preview">
+                    <i class="fas fa-cubes"></i>
+                    <div class="game-overlay">
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3>Air Sculptor</h3>
+                    <p>Create 3D sculptures in virtual space using hand gestures. Shape your imagination!</p>
+                    <div class="game-meta">
+                        <span class="difficulty">Expert</span>
+                        <span class="players">Single Player</span>
+                        <span class="status-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Player Section -->
+    <section class="video-section">
+        <div class="section-header">
+            <h2>Featured Movies</h2>
+            <p>Control playback with intuitive hand gestures</p>
+        </div>
+        <div class="video-container">
+            <div class="video-player">
+                <video id="movie-player" controls>
+                    <source src="{{ url_for('static', filename='videos/sample.mp4') }}" type="video/mp4">
+                </video>
+                <div class="gesture-controls">
+                    <div class="gesture-indicator">
+                        <i class="fas fa-hand-paper"></i>
+                        <span>Gesture Control Active</span>
+                    </div>
+                    <div class="gesture-hints">
+                        <div class="hint">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Play/Pause</span>
+                        </div>
+                        <div class="hint">
+                            <i class="fas fa-hand-point-left"></i>
+                            <span>Rewind</span>
+                        </div>
+                        <div class="hint">
+                            <i class="fas fa-hand-point-right"></i>
+                            <span>Forward</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="video-playlist">
+                <h3>Up Next</h3>
+                <div class="playlist-items">
+                    <!-- Playlist items will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Game Modal -->
+<div class="game-modal" id="gameModal">
+    <div class="game-modal-content">
+        <div class="game-modal-header">
+            <h2 id="gameTitle">Game Title</h2>
+            <div class="gesture-control-toggle">
+                <button id="toggleGestures" class="gesture-toggle-btn">
+                    <i class="fas fa-hand-paper"></i>
+                    <span>Enable Gestures</span>
+                </button>
+            </div>
+            <button class="close-game-btn">&times;</button>
+        </div>
+        <div class="game-modal-body">
+            <div class="game-container">
+                <div class="gesture-overlay" id="gestureOverlay">
+                    <video id="gestureVideo" playsinline style="display: none;"></video>
+                    <canvas id="gestureCanvas"></canvas>
+                    <div class="gesture-info">
+                        <div class="gesture-status">
+                            <i class="fas fa-circle status-dot"></i>
+                            <span>Gesture Control Ready</span>
+                        </div>
+                        <div class="gesture-hints">
+                            <div class="hint">
+                                <i class="fas fa-hand-point-up"></i>
+                                <span>1 Finger: Next</span>
+                            </div>
+                            <div class="hint">
+                                <i class="fas fa-peace"></i>
+                                <span>2 Fingers: Previous</span>
+                            </div>
+                            <div class="hint">
+                                <i class="fas fa-hand-paper"></i>
+                                <span>5 Fingers: Play/Pause</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="gameContent"></div>
+            </div>
+            <div class="game-loading">
+                <div class="game-loading-spinner"></div>
+                <p>Loading game...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .movies-container {
+        min-height: 100vh;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .movies-hero {
+            display: flex;
+            align-items: center;
+        justify-content: space-between;
+        padding: 80px 120px;
+        background: var(--surface-darker);
             position: relative;
-        }
-        
-        /* Leonardo.ai style grid background */
-        .grid-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: -2;
-        }
-        
-        /* Leonardo.ai style gradient background */
-        .gradient-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.15), transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.15), transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1), transparent 60%);
-            z-index: -1;
-            opacity: 0.8;
-        }
-        
-        /* Leonardo.ai style announcement bar */
-        .announcement-bar {
-            background: var(--primary-gradient);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: 500;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        flex: 1;
+        max-width: 600px;
             position: relative;
-            z-index: 100;
-        }
-        
-        .announcement-bar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 8px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .announcement-bar a svg {
-            margin-left: 4px;
-        }
-        
-        /* Leonardo.ai style navbar */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            z-index: 50;
-        }
-        
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .navbar-brand {
-            font-size: 24px;
-            font-weight: 700;
-            background: var(--text-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .navbar-links {
-            display: flex;
-            gap: 24px;
-        }
-        
-        .navbar-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-            position: relative;
-            padding: 8px 0;
-        }
-        
-        .navbar-link:hover, .navbar-link.active {
-            color: var(--text-light);
-        }
-        
-        .navbar-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--secondary-gradient);
-            border-radius: 2px;
-        }
-        
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .launch-button {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-        
-        .launch-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-        }
-        
-        /* Hero section with search */
-        .hero-section {
-            min-height: 70vh; /* Reduced height to make room for results */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 60px 24px 20px;
-            position: relative;
-        }
-        
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
+        z-index: 1;
         }
         
         .hero-title {
-            font-size: 64px;
+        font-size: 48px;
             font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, #ffffff, #4ecca3);
+        margin-bottom: 16px;
+        background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            position: relative;
-            animation: titleReveal 1.5s ease-out forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        @keyframes titleReveal {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Add a subtle glow effect to the title */
-        .hero-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff0055, #4ecca3);
-            animation: titleUnderline 1.5s ease-out 0.5s forwards;
-        }
-        
-        @keyframes titleUnderline {
-            0% {
-                width: 0;
-            }
-            100% {
-                width: 100px;
-            }
-        }
-        
-        /* Add a subtle shimmer effect to the title */
-        .hero-title-shimmer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(78, 204, 163, 0.2) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            animation: shimmer 3s infinite;
-            background-size: 200% 100%;
-        }
-        
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-            100% {
-                background-position: 200% 0;
-            }
-        }
-        
-        /* Text changing animation */
-        #changing-text {
-            display: inline-block;
-            position: relative;
-            animation: textChange 4s infinite;
-        }
-        
-        @keyframes textChange {
-            0%, 45% {
-                opacity: 1;
-            }
-            50%, 55% {
-                opacity: 0;
-            }
-            60%, 100% {
-                opacity: 1;
-            }
         }
         
         .hero-subtitle {
-            font-size: 20px;
+        font-size: 18px;
             color: var(--text-muted);
-            margin-bottom: 40px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+        margin-bottom: 32px;
             line-height: 1.6;
-            animation: fadeIn 1s ease-out 0.2s both;
-        }
-        
-        /* Search results container - positioned below search */
-        .search-results-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px 0 60px;
-            position: relative;
-        }
-        
-        /* Search results styling */
-        .video-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            width: 100%;
-            margin-top: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        
-        .video-results.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Result item styling */
-        .result-item {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            height: 100%;
+    }
+
+    .hero-stats {
             display: flex;
-            flex-direction: column;
-        }
-        
-        .result-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.3);
-            border-color: rgba(139, 92, 246, 0.2);
-        }
-        
-        .result-thumbnail {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-        
-        .result-info {
-            padding: 16px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .result-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-light);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .result-channel {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-        
-        .result-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: auto;
-        }
-        
-        /* No results message */
-        .no-results {
+        gap: 48px;
+        margin-top: 48px;
+    }
+
+    .stat-item {
             text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            font-size: 18px;
-        }
-        
-        /* Loading indicator for search */
-        .search-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-        }
-        
-        .search-loading.active {
+    }
+
+    .stat-number {
             display: block;
-        }
-        
-        .search-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(139, 92, 246, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent-purple);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        /* Search container */
-        .search-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px;
-            position: relative;
-            animation: fadeIn 1s ease-out 0.4s both;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 16px 24px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(30, 41, 59, 0.5);
-            color: var(--text-light);
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
-        }
-        
-        .search-button {
-            position: absolute;
-            right: 4px;
-            top: 4px;
-            bottom: 4px;
-            padding: 0 24px;
-            border-radius: 50px;
-            border: none;
-            background: var(--primary-gradient);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .search-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-        
-        /* Main content sections */
-        .section {
-            padding: 80px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-header {
-            font-size: 32px;
+        font-size: 36px;
             font-weight: 700;
-            margin-bottom: 40px;
-            text-align: center;
-            background: var(--text-gradient);
+        background: var(--secondary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: var(--primary-gradient);
-            border-radius: 3px;
-        }
-        
-        /* Gesture cards */
-        .gesture-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-            margin-top: 40px;
-        }
-        
-        .gesture-card {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 16px;
-            padding: 24px;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .hero-visual {
+        flex: 1;
             display: flex;
-            flex-direction: column;
+        justify-content: center;
             align-items: center;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
-            overflow: hidden;
-        }
-        
-        .gesture-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary-gradient);
-        }
-        
-        .gesture-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-            border-color: rgba(139, 92, 246, 0.2);
-        }
-        
-        .gesture-icon {
-            width: 64px;
-            height: 64px;
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: 50%;
+    }
+
+    .gesture-preview {
+        width: 480px;
+        height: 320px;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        background: var(--surface-dark);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .gesture-preview video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gesture-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
-            font-size: 28px;
-            position: relative;
-        }
-        
-        .gesture-icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            opacity: 0.2;
-            z-index: -1;
-        }
-        
-        .gesture-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gesture-preview:hover .gesture-overlay {
+        opacity: 1;
+    }
+
+    .gesture-hint {
+        text-align: center;
             color: var(--text-light);
         }
         
-        .gesture-description {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-        
-        /* Video player */
-        .video-container {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            aspect-ratio: 16/9;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-        }
-        
-        /* Camera preview */
-        .camera-preview-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 150px;
-            height: 150px;
-            background: rgba(15, 23, 42, 0.7);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
-            z-index: 40;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        /* Toggle button */
-        .controls-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            margin: 40px auto;
-        }
-        
-        #toggle-gesture {
+    .gesture-hint i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        animation: wave 2s ease infinite;
+    }
+
+    @keyframes wave {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-20deg); }
+        75% { transform: rotate(20deg); }
+    }
+
+    /* Games Section */
+    .games-section {
+        padding: 80px 120px;
+        background: var(--surface-dark);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+
+    .section-header h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 12px;
             background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-        
-        #toggle-gesture:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-        }
-        
-        #toggle-gesture.active {
-            background: var(--secondary-gradient);
-        }
-        
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-        }
-        
-        .status-indicator.active {
-            background: #10b981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
-        }
-        
-        .connection-status {
-            font-size: 14px;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .section-header p {
             color: var(--text-muted);
-            transition: all 0.3s ease;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-        
-        .reveal.active {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            
-        /* Games Section Styles */
-        .games-section {
-            padding: 80px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
+        font-size: 16px;
         }
         
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 24px;
-            margin-top: 40px;
+            padding: 20px;
         }
         
         .game-card {
-            background: rgba(30, 41, 59, 0.5);
+        background: rgba(30, 41, 59, 0.5);
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
         
         .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-8px) scale(1.02);
+        border-color: var(--accent-purple);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
         }
         
         .game-preview {
-            position: relative;
-            height: 180px;
-            background: rgba(15, 23, 42, 0.7);
+        height: 200px;
+        background: linear-gradient(45deg, rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.7));
             display: flex;
             align-items: center;
             justify-content: center;
+        position: relative;
             overflow: hidden;
         }
         
-        .game-icon {
-            font-size: 64px;
-            transition: all 0.3s ease;
-        }
+    .game-preview i {
+        font-size: 64px;
+        color: var(--accent-purple);
+            transition: all 0.4s ease;
+        transform-origin: center;
+    }
         
-        .game-card:hover .game-icon {
-            transform: scale(1.1);
+    .game-card:hover .game-preview i {
+            transform: scale(1.2) rotate(5deg);
         }
         
         .game-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .game-card:hover .game-overlay {
-            opacity: 1;
-        }
-        
-        .play-button {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
-        }
-        
-        .game-card:hover .play-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.6);
-        }
-        
-        .game-info {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .game-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-light);
-        }
-        
-        .game-description {
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-        
-        /* Game Modal Styles */
-        .game-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 15, 29, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .game-modal-content {
-            background: var(--surface-darker);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: modalOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            transform: scale(0.8);
-            opacity: 0;
-        }
-        
-        @keyframes modalOpen {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        /* Gesture control button */
-        .gesture-control-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 16px;
-        }
-        
-        .gesture-control-btn:hover {
-            background: rgba(30, 41, 59, 0.9);
-            transform: translateY(-2px);
-        }
-        
-        .gesture-control-btn.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            border-color: rgba(139, 92, 246, 0.4);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-        }
-        
-        .gesture-icon {
-            font-size: 20px;
-        }
-        
-        .connection-status {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-top: 8px;
-        }
-        
-        .connection-status.connected {
-            color: #4ecca3;
-        }
-        
-        /* Camera preview */
-        .camera-preview-container {
-            width: 200px;
-            height: 200px;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 12px;
-            overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(139, 92, 246, 0.2);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.4s ease;
+    }
+
+    .game-card:hover .game-overlay {
+        opacity: 1;
+    }
+
+    .play-button {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .game-card:hover .play-button {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .play-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+    }
+
+    .coming-soon-badge {
+        background: rgba(236, 72, 153, 0.2);
+        color: var(--accent-pink);
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    .game-card:hover .coming-soon-badge {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .game-info {
+        padding: 20px;
+    }
+
+    .game-info h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-light);
+    }
+
+    .game-info p {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+    }
+
+    .game-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .game-meta span {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .difficulty {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--accent-purple);
+    }
+
+    .players {
+        background: rgba(236, 72, 153, 0.1);
+        color: var(--accent-pink);
+    }
+
+    .status-badge {
+        background: rgba(99, 102, 241, 0.1);
+        color: #6366f1;
+    }
+
+    .status-badge.playable {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    /* Video Section */
+    .video-section {
+        padding: 80px 120px;
+        background: var(--surface-darker);
+    }
+
+    .video-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .video-player {
             position: relative;
-            margin-top: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--surface-dark);
         }
         
-        .camera-feed {
+    .video-player video {
             width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .debug-info {
+        aspect-ratio: 16/9;
+        background: black;
+    }
+
+    .gesture-controls {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            color: var(--text-light);
-            padding: 8px;
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        /* Gesture control section */
-        .gesture-control-section {
-            padding: 60px 24px;
-            background: rgba(15, 23, 42, 0.3);
-            position: relative;
-        }
-        
-        .section-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            text-align: center;
-            background: var(--text-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .section-description {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            font-size: 18px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .controls-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-        
-        .gesture-instructions {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 16px;
+        right: 0;
             padding: 24px;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .gesture-instructions h3 {
-            margin-bottom: 16px;
-            font-size: 20px;
-            color: var(--text-light);
-        }
-        
-        .gesture-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .gesture-list li {
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-        }
-        
-        .gesture-emoji {
-            font-size: 24px;
-            margin-right: 12px;
-            min-width: 40px;
-            text-align: center;
-        }
-        
-        .gesture-display {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.8);
-            color: #4ecca3;
-            padding: 20px 40px;
-            border-radius: 50px;
-            font-size: 24px;
-            font-weight: 700;
+        justify-content: space-between;
+        align-items: flex-end;
             opacity: 0;
             transition: opacity 0.3s ease;
-            z-index: 1000;
-            pointer-events: none;
-            text-transform: uppercase;
-            border: 2px solid rgba(78, 204, 163, 0.3);
         }
         
-        .gesture-display.active {
+    .video-player:hover .gesture-controls {
             opacity: 1;
         }
         
-        .gesture-status-container {
-            margin-top: 16px;
-            text-align: center;
-        }
-        
-        .status {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .status.disabled {
-            background: rgba(100, 116, 139, 0.2);
-            color: #94a3b8;
-        }
-        
-        .status.connecting {
-            background: rgba(234, 179, 8, 0.2);
-            color: #eab308;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .status.connected {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-        }
-        
-        .status.detected {
-            background: rgba(139, 92, 246, 0.4);
-            color: #8b5cf6;
-            animation: flash 0.5s;
-        }
-        
-        .status.error {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
-        }
-        
-        @keyframes flash {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .camera-container {
-            position: relative;
-            width: 320px;
-            height: 240px;
-            margin: 0 auto;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .camera-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+    .gesture-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-light);
+    }
+
+    .gesture-hints {
+        display: flex;
+        gap: 24px;
+    }
+
+    .hint {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: rgba(15, 23, 42, 0.7);
+        gap: 8px;
             color: var(--text-light);
-            font-weight: 500;
-            transition: opacity 0.3s ease;
-        }
-        
-        .camera-feed {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .gesture-controls {
-            margin-top: 30px;
-            padding: 24px;
-            background: rgba(30, 41, 59, 0.5);
+        font-size: 14px;
+    }
+
+    .video-playlist {
+        background: var(--surface-dark);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .gesture-control-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
-        .gesture-control-title {
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .video-playlist h3 {
             font-size: 20px;
             font-weight: 600;
+        margin-bottom: 16px;
             color: var(--text-light);
         }
         
-        .gesture-toggle-btn {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            border: 1px solid rgba(139, 92, 246, 0.4);
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: var(--text-light);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+    .playlist-items {
             display: flex;
-            align-items: center;
-            gap: 8px;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    @media (max-width: 1200px) {
+        .movies-hero,
+        .games-section,
+        .video-section {
+            padding: 60px;
         }
-        
-        .gesture-toggle-btn:hover {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
-            transform: translateY(-2px);
+
+        .games-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
-        
-        .gesture-toggle-btn.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(139, 92, 246, 0.4));
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+
+        .video-container {
+            grid-template-columns: 1fr;
         }
-        
-        .gesture-guide {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .movies-hero {
+            flex-direction: column;
+            text-align: center;
+            gap: 48px;
         }
-        
-        .gesture-item {
-            background: rgba(15, 23, 42, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .gesture-item:hover {
-            background: rgba(15, 23, 42, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .gesture-icon {
-            font-size: 24px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
+
+        .hero-stats {
             justify-content: center;
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: 50%;
         }
-        
-        .gesture-info {
-            flex: 1;
-        }
-        
-        .gesture-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .gesture-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-    </style>
-</head>
-<body>
-    <!-- Background elements -->
-    <div class="grid-background"></div>
-    <div class="gradient-background"></div>
-    
-    <!-- Announcement bar -->
-    <div class="announcement-bar">
-        Gesture control is now available! 
-        <a href="#gestures">
-            Check it out here
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </a>
-    </div>
-    
-    <!-- Leonardo.ai style navbar -->
-    <nav class="navbar">
-        <div class="navbar-left">
-            <a href="/" class="navbar-brand">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v8"></path>
-                    <path d="M12 18v4"></path>
-                    <path d="M4.93 10.93l2.83 2.83"></path>
-                    <path d="M16.24 16.24l2.83 2.83"></path>
-                    <path d="M2 12h4"></path>
-                    <path d="M18 12h4"></path>
-                    <path d="M4.93 13.07l2.83-2.83"></path>
-                    <path d="M16.24 7.76l2.83-2.83"></path>
-                </svg>
-                QuantumGaze
-            </a>
-            <div class="navbar-links">
-                <a href="/" class="navbar-link">Home</a>
-                <a href="/movies" class="navbar-link active">Movies</a>
-                <a href="#features" class="navbar-link">Features</a>
-                <a href="#about" class="navbar-link">About</a>
-    </div>
-        </div>
-        <div class="navbar-right">
-            <button class="launch-button" onclick="toggleGestureControl()">Enable Gestures</button>
-        </div>
-    </nav>
-    
-    <!-- Hero section with search and results -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">
-                What do you want to <span id="changing-text">watch</span>?
-                <span class="hero-title-shimmer"></span>
-            </h1>
-            <p class="hero-subtitle">Search, play, and control videos with hand gestures for a futuristic viewing experience</p>
 
-    <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search for videos...">
-                <button onclick="searchVideos()" class="search-button">Search</button>
-            </div>
-    </div>
+        .games-grid {
+            grid-template-columns: 1fr;
+        }
 
-        <!-- Search results positioned directly below search -->
-        <div class="search-results-container">
-            <div class="search-loading" id="searchLoading">
-                <div class="search-spinner"></div>
-        </div>
-            <div class="video-results" id="searchResults">
-                <!-- Results will be populated here -->
-    </div>
-        </div>
-    </section>
+        .gesture-preview {
+            width: 100%;
+            height: 240px;
+        }
+        }
 
-    <!-- Video player section -->
-    <section class="section reveal" id="player-section">
-        <h2 class="section-header">Video Player</h2>
-        <div class="video-container">
-                <div id="player"></div>
-            </div>
-    </section>
-    
-    <!-- Gesture cards section -->
-    <section class="section reveal" id="gestures">
-        <h2 class="section-header">Control With Gestures</h2>
-        <div class="gesture-cards-container">
-            <div class="gesture-card">
-                <div class="gesture-icon">✋</div>
-                <div class="gesture-name">Open Palm</div>
-                <div class="gesture-description">Play/Pause the video</div>
-        </div>
-            
-            <div class="gesture-card">
-                <div class="gesture-icon">👈</div>
-                <div class="gesture-name">Point Left</div>
-                <div class="gesture-description">Rewind 10 seconds</div>
-            </div>
-            
-            <div class="gesture-card">
-                <div class="gesture-icon">👉</div>
-                <div class="gesture-name">Point Right</div>
-                <div class="gesture-description">Forward 10 seconds</div>
-                    </div>
-            
-            <div class="gesture-card">
-                <div class="gesture-icon">☝️</div>
-                <div class="gesture-name">Index Up</div>
-                <div class="gesture-description">Increase volume</div>
-                    </div>
-            
-            <div class="gesture-card">
-                <div class="gesture-icon">😴</div>
-                <div class="gesture-name">Eyes Closed</div>
-                <div class="gesture-description">Auto-pause video</div>
-                    </div>
-                </div>
-    </section>
-    
-    <!-- Update the controls-section with better positioning -->
-    <section class="gesture-control-section" id="gestures">
-        <div class="section-container">
-            <h2 class="section-title">Gesture Control</h2>
-            <p class="section-description">Control video playback with hand gestures. Enable the camera to try it out.</p>
-            
-            <div class="controls-wrapper">
-                <div class="controls-section">
-                    <button id="toggle-gesture" class="gesture-control-btn">
-                        <span class="gesture-icon">👋</span>
-                        <span class="gesture-text">Enable Gesture Control</span>
-                    </button>
-                    <div class="connection-status" id="connection-status">Gesture control is disabled</div>
-                </div>
+    /* Add these styles to your existing CSS */
+    .gesture-control-toggle {
+        display: flex;
+        align-items: center;
+    }
+
+    .gesture-toggle-btn {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--accent-purple);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .gesture-toggle-btn:hover {
+        background: rgba(139, 92, 246, 0.2);
+    }
+
+    .gesture-toggle-btn.active {
+        background: var(--accent-purple);
+        color: white;
+    }
+
+    .gesture-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 150px;
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        display: none;
+    }
+
+    .gesture-overlay.active {
+        display: block;
+    }
+
+    #gestureCanvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gesture-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+    }
+
+    .gesture-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        color: var(--text-light);
+    }
+
+    .status-dot {
+        font-size: 8px;
+        color: #10b981;
+        animation: pulse 2s infinite;
+    }
+
+    .gesture-hints {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .gesture-hints .hint {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
+</style>
+
+<!-- Add MediaPipe dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+<!-- Add gesture controls script -->
+<script src="{{ url_for('static', filename='js/gesture-controls.js') }}"></script>
+
+<!-- Add game scripts -->
+<script src="{{ url_for('static', filename='js/games/hand-pong.js') }}"></script>
+
+<script>
+    // Initialize gesture controller when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        const gestureController = new GestureController();
+        const toggleBtn = document.getElementById('toggleGestures');
+        const gestureOverlay = document.getElementById('gestureOverlay');
+        const video = document.getElementById('gestureVideo');
+        const canvas = document.getElementById('gestureCanvas');
+        let currentGame = null;
+
+        toggleBtn.addEventListener('click', async function() {
+            if (!this.classList.contains('active')) {
+                // Enable gestures
+                this.classList.add('active');
+                this.querySelector('span').textContent = 'Disable Gestures';
+                gestureOverlay.classList.add('active');
                 
-                <div class="camera-container">
-                    <img id="processed-feed" class="camera-feed" style="display: none;">
-                    <div class="camera-overlay" id="camera-overlay">
-                        <div>Enable gesture control to activate camera</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="gesture-guide">
-                <div class="gesture-item">
-                    <div class="gesture-icon">✋</div>
-                    <div class="gesture-info">
-                        <div class="gesture-name">Open Palm</div>
-                        <div class="gesture-desc">Play/Pause video</div>
-                    </div>
-                </div>
-                <div class="gesture-item">
-                    <div class="gesture-icon">👉</div>
-                    <div class="gesture-info">
-                        <div class="gesture-name">Point Right</div>
-                        <div class="gesture-desc">Forward 10 seconds</div>
-                    </div>
-                </div>
-                <div class="gesture-item">
-                    <div class="gesture-icon">👈</div>
-                    <div class="gesture-info">
-                        <div class="gesture-name">Point Left</div>
-                        <div class="gesture-desc">Rewind 10 seconds</div>
-                    </div>
-                </div>
-                <div class="gesture-item">
-                    <div class="gesture-icon">☝️</div>
-                    <div class="gesture-info">
-                        <div class="gesture-name">Index Up</div>
-                        <div class="gesture-desc">Increase volume</div>
-                    </div>
-                </div>
-                <div class="gesture-item">
-                    <div class="gesture-icon">✊</div>
-                    <div class="gesture-info">
-                        <div class="gesture-name">Fist</div>
-                        <div class="gesture-desc">Decrease volume</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="gesture-status-container">
-                <div id="gesture-status" class="status disabled">Gesture control disabled</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Add this HTML for the gesture display right after the body tag -->
-    <div id="gesture-display" class="gesture-display"></div>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ url_for('static', filename='js/games.js') }}"></script>
-    <script>
-        let player;
-        let gestureControlEnabled = false;
-
-        // Text changing effect between 'watch' and 'play'
-        document.addEventListener('DOMContentLoaded', function() {
-            const changingText = document.getElementById('changing-text');
-            let isWatch = true;
-            
-            setInterval(() => {
-                // Only change the text when opacity is 0 (during the middle of the fade animation)
-                if (getComputedStyle(changingText).opacity < 0.1) {
-                    changingText.textContent = isWatch ? 'play' : 'watch';
-                    isWatch = !isWatch;
+                // Initialize if not already done
+                if (!gestureController.isInitialized) {
+                    await gestureController.initialize(video, canvas);
+                    gestureController.isInitialized = true;
                 }
-            }, 2000); // Check every 2 seconds
-        });
-
-        // Initialize YouTube Player
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '360',
-                width: '640',
-                videoId: '',
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 1
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            // Player is ready to receive commands
-            console.log('YouTube player is ready');
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            } else if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
-            return num;
-        }
-
-        function formatDuration(duration) {
-            // Convert ISO 8601 duration to readable format
-            const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-            const hours = (match[1] || '').replace('H', '');
-            const minutes = (match[2] || '').replace('M', '');
-            const seconds = (match[3] || '').replace('S', '');
-            
-            if (hours) {
-                return `${hours}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-            }
-            return `${minutes || '0'}:${seconds.padStart(2, '0')}`;
-        }
-
-        function togglePlayPause() {
-            if (player && typeof player.getPlayerState === 'function') {
-                const state = player.getPlayerState();
-                if (state === YT.PlayerState.PLAYING) {
-                    player.pauseVideo();
-                } else {
-                    player.playVideo();
-                }
-            }
-        }
-
-        function toggleGestureControl() {
-            gestureControlEnabled = !gestureControlEnabled;
-            const button = document.getElementById('toggle-gesture');
-            const statusDot = document.getElementById('status-dot');
-            const connectionStatus = document.getElementById('connection-status');
-            const gestureContainer = document.querySelector('.gesture-control-container');
-            
-            if (gestureControlEnabled) {
-                button.textContent = 'Disable Gesture Control';
-                button.classList.add('active');
-                statusDot.classList.add('active');
-                gestureContainer.classList.add('active');
-                connectionStatus.textContent = 'Connecting to camera...';
-                connectionStatus.className = 'connection-status';
                 
-                startGestureStream();
+                gestureController.start();
             } else {
-                button.textContent = 'Enable Gesture Control';
-                button.classList.remove('active');
-                statusDot.classList.remove('active');
-                gestureContainer.classList.remove('active');
-                connectionStatus.textContent = 'Gesture control is disabled';
-                connectionStatus.className = 'connection-status';
-                stopGestureStream();
-            }
-        }
-
-        // Update the gesture control event source handling
-        let gestureEventSource = null;
-        let reconnectAttempts = 0;
-        const MAX_RECONNECT_ATTEMPTS = 5;
-        const RECONNECT_DELAY = 2000; // 2 seconds
-        let currentVideoId = null;
-        let gestureDebounceTimer = null;
-        const GESTURE_DEBOUNCE = 1000; // 1 second debounce for gestures
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize toggle button
-            const toggleBtn = document.getElementById('toggle-gesture');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    const isActive = this.classList.contains('active');
-                    
-                    if (isActive) {
-                        // Disable gesture control
-                        this.classList.remove('active');
-                        this.querySelector('.gesture-btn-text').textContent = 'Enable Gesture Control';
-                        document.getElementById('gesture-status').className = 'status disabled';
-                        document.getElementById('gesture-status').textContent = 'Gesture control disabled';
-                        document.getElementById('camera-overlay').style.display = 'flex';
-                        stopGestureStream();
-                    } else {
-                        // Enable gesture control
-                        this.classList.add('active');
-                        this.querySelector('.gesture-btn-text').textContent = 'Disable Gesture Control';
-                        document.getElementById('gesture-status').className = 'status connecting';
-                        document.getElementById('gesture-status').textContent = 'Connecting to camera...';
-                        document.getElementById('camera-overlay').style.display = 'none';
-                        startGestureStream();
-                    }
-                });
-            }
-            
-            // Initialize search form
-            const searchForm = document.getElementById('search-form');
-            if (searchForm) {
-                searchForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const query = document.getElementById('search-input').value;
-                    if (query) {
-                        searchVideos(query);
-                    }
-                });
+                // Disable gestures
+                this.classList.remove('active');
+                this.querySelector('span').textContent = 'Enable Gestures';
+                gestureOverlay.classList.remove('active');
+                gestureController.stop();
             }
         });
-        
-        function startGestureStream() {
-            if (gestureEventSource) {
-                gestureEventSource.close();
-            }
-            
-            // Show connecting status
-            const statusElement = document.getElementById('gesture-status');
-            if (statusElement) {
-                statusElement.textContent = 'Connecting to camera...';
-                statusElement.className = 'status connecting';
-            }
-            
-            // Create a new event source
-            gestureEventSource = new EventSource('/video_feed');
-            
-            // Handle connection open
-            gestureEventSource.onopen = function() {
-                console.log('Gesture stream connected');
-                reconnectAttempts = 0;
+
+        // Game initialization functions
+        const gameInitializers = {
+            'hand-pong': function(container) {
+                // Create game canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 500;
+                container.appendChild(canvas);
                 
-                if (statusElement) {
-                    statusElement.textContent = 'Camera connected';
-                    statusElement.className = 'status connected';
-                }
-            };
-            
-            // Handle messages
-            gestureEventSource.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
+                // Initialize game
+                const game = new HandPong(canvas);
+                
+                // Add mouse control for testing/fallback
+                canvas.addEventListener('mousemove', (e) => game.handleMouseMove(e));
+                
+                return game;
+            },
+            'gesture-hero': function(container) {
+                // Gesture Hero initialization code
+            },
+            'air-painter': function(container) {
+                // Air Painter initialization code
+            }
+        };
+
+        // Handle game launch
+        document.querySelectorAll('.play-button[data-game]').forEach(button => {
+            button.addEventListener('click', function() {
+                const gameId = this.getAttribute('data-game');
+                const gameModal = document.getElementById('gameModal');
+                const gameTitle = document.getElementById('gameTitle');
+                const gameContent = document.getElementById('gameContent');
+                const gameLoading = document.querySelector('.game-loading');
+                
+                if (gameInitializers[gameId]) {
+                    // Show game modal
+                    gameModal.style.display = 'flex';
+                    gameTitle.textContent = this.closest('.game-card').querySelector('h3').textContent;
+                    gameContent.innerHTML = '';
+                    gameLoading.style.display = 'flex';
                     
-                    // Update the processed feed image
-                    if (data.image) {
-                        const processedFeed = document.getElementById('processed-feed');
-                        if (processedFeed) {
-                            processedFeed.src = data.image;
-                            processedFeed.style.display = 'block';
-                        }
-                    }
-                    
-                    // Handle errors
-                    if (data.error) {
-                        console.error('Gesture stream error:', data.error);
-                        if (statusElement) {
-                            statusElement.textContent = 'Error: ' + data.error;
-                            statusElement.className = 'status error';
-                        }
-                        return;
-                    }
-                    
-                    // Apply gesture control if a gesture is detected with good confidence
-                    if (data.gesture && data.confidence > 0.7) {
-                        // Debounce gesture detection to prevent rapid firing
-                        clearTimeout(gestureDebounceTimer);
-                        gestureDebounceTimer = setTimeout(() => {
-                            // Send the gesture to the backend
-                            sendGestureCommand(data.gesture);
-                            
-                            // Also apply it directly to the player
-                            applyGestureControl(data.gesture);
-                            
-                            // Update status with detected gesture
-                            if (statusElement) {
-                                statusElement.textContent = 'Detected: ' + data.gesture;
-                                statusElement.className = 'status detected';
+                    // Initialize game after a short delay to show loading animation
+                    setTimeout(() => {
+                        currentGame = gameInitializers[gameId](gameContent);
+                        
+                        // Set up gesture handler
+                        gestureController.setGestureCallback((gesture) => {
+                            if (currentGame && currentGame.handleGesture) {
+                                currentGame.handleGesture(gesture);
                             }
-                        }, GESTURE_DEBOUNCE);
-                    }
-                } catch (e) {
-                    console.error('Error parsing gesture data:', e);
-                }
-            };
-            
-            // Handle errors
-            gestureEventSource.onerror = function(error) {
-                console.error('Gesture stream error:', error);
-                
-                if (statusElement) {
-                    statusElement.textContent = 'Connection error. Retrying...';
-                    statusElement.className = 'status error';
-                }
-                
-                // Close the current connection
-                gestureEventSource.close();
-                
-                // Attempt to reconnect with exponential backoff
-                reconnectAttempts++;
-                if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
-                    const delay = RECONNECT_DELAY * Math.pow(1.5, reconnectAttempts - 1);
-                    console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
-                    
-                    setTimeout(function() {
-                        startGestureStream();
-                    }, delay);
-                } else {
-                    if (statusElement) {
-                        statusElement.textContent = 'Failed to connect. Please try again.';
-                    }
-                    console.error('Max reconnect attempts reached');
-                }
-            };
-        }
-        
-        function stopGestureStream() {
-            if (gestureEventSource) {
-                gestureEventSource.close();
-                gestureEventSource = null;
-            }
-            
-            // Hide the processed feed
-            const processedFeed = document.getElementById('processed-feed');
-            if (processedFeed) {
-                processedFeed.style.display = 'none';
-            }
-            
-            // Update status
-            const statusElement = document.getElementById('gesture-status');
-            if (statusElement) {
-                statusElement.textContent = 'Gesture control disabled';
-                statusElement.className = 'status disabled';
-            }
-        }
-        
-        // Function to send a gesture command to the backend
-        function sendGestureCommand(gesture) {
-            fetch('/gesture_controls', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    gesture: gesture,
-                    videoId: currentVideoId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Gesture command response:', data);
-                
-                // Show the gesture in the UI
-                showGestureDisplay(gesture);
-            })
-            .catch(error => console.error('Error sending gesture command:', error));
-        }
-        
-        // Function to show the gesture display
-        function showGestureDisplay(gesture) {
-            const gestureDisplay = document.getElementById('gesture-display');
-            if (!gestureDisplay) return;
-            
-            let gestureText = '';
-            let gestureIcon = '';
-            
-            switch(gesture) {
-                case 'palm':
-                    gestureText = 'Play/Pause';
-                    gestureIcon = '✋';
-                    break;
-                case 'point_right':
-                    gestureText = 'Forward';
-                    gestureIcon = '👉';
-                    break;
-                case 'point_left':
-                    gestureText = 'Rewind';
-                    gestureIcon = '👈';
-                    break;
-                case 'index_up':
-                    gestureText = 'Volume Up';
-                    gestureIcon = '☝️';
-                    break;
-                case 'fist':
-                    gestureText = 'Volume Down';
-                    gestureIcon = '✊';
-                    break;
-                default:
-                    return;
-            }
-            
-            gestureDisplay.innerHTML = `${gestureIcon} ${gestureText}`;
-            gestureDisplay.classList.add('active');
-            
-            setTimeout(() => {
-                gestureDisplay.classList.remove('active');
-            }, 1500);
-        }
-        
-        // Function to apply gesture controls to the YouTube player
-        function applyGestureControl(gesture) {
-            if (!player) return;
-            
-            switch(gesture) {
-                case 'palm':
-                    // Play/pause
-                    const state = player.getPlayerState();
-                    if (state === YT.PlayerState.PLAYING) {
-                        player.pauseVideo();
-                        console.log('Gesture: Pause video');
-                    } else {
-                        player.playVideo();
-                        console.log('Gesture: Play video');
-                    }
-                    break;
-                    
-                case 'point_right':
-                    // Forward 10 seconds
-                    const currentTime = player.getCurrentTime();
-                    player.seekTo(currentTime + 10, true);
-                    console.log('Gesture: Forward 10 seconds');
-                    break;
-                    
-                case 'point_left':
-                    // Rewind 10 seconds
-                    const currentTime2 = player.getCurrentTime();
-                    player.seekTo(Math.max(0, currentTime2 - 10), true);
-                    console.log('Gesture: Rewind 10 seconds');
-                    break;
-                    
-                case 'index_up':
-                    // Increase volume
-                    const currentVolume = player.getVolume();
-                    player.setVolume(Math.min(100, currentVolume + 10));
-                    console.log('Gesture: Volume up to ' + Math.min(100, currentVolume + 10));
-                    break;
-                    
-                case 'fist':
-                    // Decrease volume
-                    const currentVolume2 = player.getVolume();
-                    player.setVolume(Math.max(0, currentVolume2 - 10));
-                    console.log('Gesture: Volume down to ' + Math.max(0, currentVolume2 - 10));
-                    break;
-            }
-        }
-        
-        // Function to create YouTube player for a specific video
-        function createYouTubePlayer(videoId) {
-            if (player) {
-                player.destroy();
-            }
-            
-            currentVideoId = videoId;
-            
-            player = new YT.Player('player', {
-                height: '360',
-                width: '640',
-                videoId: videoId,
-                playerVars: {
-                    'playsinline': 1,
-                    'autoplay': 0,
-                    'controls': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-        
-        function onPlayerReady(event) {
-            console.log('Player ready');
-        }
-        
-        function onPlayerStateChange(event) {
-            console.log('Player state changed:', event.data);
-        }
-    </script>
-
-    <script>
-        // Make camera preview draggable
-        const cameraPreview = document.querySelector('.camera-preview-container');
-        let isDragging = false;
-        let currentX = 0;
-        let currentY = 0;
-        let initialX = 0;
-        let initialY = 0;
-        let xOffset = 0;
-        let yOffset = 0;
-
-        cameraPreview.addEventListener('mousedown', dragStart);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', dragEnd);
-
-        // Touch events
-        cameraPreview.addEventListener('touchstart', dragStart);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('touchend', dragEnd);
-
-        function dragStart(e) {
-            if (e.type === 'touchstart') {
-                initialX = e.touches[0].clientX - xOffset;
-                initialY = e.touches[0].clientY - yOffset;
-            } else {
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-            }
-
-            if (e.target === cameraPreview) {
-                isDragging = true;
-                cameraPreview.classList.add('dragging');
-            }
-        }
-
-        function drag(e) {
-            if (isDragging) {
-                e.preventDefault();
-
-                if (e.type === 'touchmove') {
-                    currentX = e.touches[0].clientX - initialX;
-                    currentY = e.touches[0].clientY - initialY;
-                } else {
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                }
-
-                xOffset = currentX;
-                yOffset = currentY;
-
-                // Constrain to viewport
-                const rect = cameraPreview.getBoundingClientRect();
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
-
-                if (currentX < 0) currentX = 0;
-                if (currentY < 0) currentY = 0;
-                if (currentX > viewportWidth - rect.width) currentX = viewportWidth - rect.width;
-                if (currentY > viewportHeight - rect.height) currentY = viewportHeight - rect.height;
-
-                setTranslate(currentX, currentY);
-            }
-        }
-
-        function dragEnd() {
-            initialX = currentX;
-            initialY = currentY;
-            isDragging = false;
-            cameraPreview.classList.remove('dragging');
-        }
-
-        function setTranslate(xPos, yPos) {
-            cameraPreview.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-        }
-
-        // Camera controls
-        document.getElementById('minimizeCamera').addEventListener('click', () => {
-            cameraPreview.style.transform = 'scale(0.7)';
-        });
-
-        document.getElementById('closeCamera').addEventListener('click', () => {
-            cameraPreview.style.display = 'none';
-        });
-
-        // Initialize video feed
-        const videoFeed = document.getElementById('videoFeed');
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    videoFeed.srcObject = stream;
-                })
-                .catch(err => {
-                    console.error("Error accessing camera:", err);
-                });
-        }
-    </script>
-
-    <script>
-        // Loading animation
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.visibility = 'hidden';
-            }, 1500);
-        });
-        
-        // Enhanced hover effects for video cards
-        document.addEventListener('mousemove', function(e) {
-            const cards = document.querySelectorAll('.preview-item');
-            cards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-                    const rotateY = ((x / rect.width) - 0.5) * 10;
-                    const rotateX = ((y / rect.height) - 0.5) * -10;
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                        });
+                        
+                        gameLoading.style.display = 'none';
+                    }, 1500);
                 }
             });
         });
-        
-        // Reset card position when mouse leaves
-        document.addEventListener('mouseleave', function() {
-            const cards = document.querySelectorAll('.preview-item');
-            cards.forEach(card => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
-            });
-        });
-        
-        // Enhanced toggle button effect
-        const toggleButton = document.getElementById('toggle-gesture');
-        if (toggleButton) {
-            toggleButton.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
-            });
-            
-            toggleButton.addEventListener('mouseleave', function() {
-                if (!this.classList.contains('active')) {
-                    this.style.transform = 'translateY(0)';
-                }
-            });
-        }
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if we need to scroll to games section
-            if (window.location.hash === '#games' || localStorage.getItem('scrollToGames') === 'true') {
-                // Clear the localStorage flag
-                localStorage.removeItem('scrollToGames');
-                
-                // Scroll to games section with a slight delay to ensure all content is loaded
-                setTimeout(() => {
-                    const gamesSection = document.getElementById('games');
-                    if (gamesSection) {
-                        gamesSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }, 500);
+        // Handle game modal close
+        document.querySelector('.close-game-btn').addEventListener('click', function() {
+            const gameModal = document.getElementById('gameModal');
+            gameModal.style.display = 'none';
+            
+            // Clean up current game
+            currentGame = null;
+            gestureController.setGestureCallback(null);
+            
+            // Disable gestures if enabled
+            if (toggleBtn.classList.contains('active')) {
+                toggleBtn.click();
             }
         });
-        
-        // Add 3D effect to gesture cards
-        document.addEventListener('mousemove', function(e) {
-            const cards = document.querySelectorAll('.gesture-card');
-            
-            cards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-                    const rotateY = ((x / rect.width) - 0.5) * 20;
-                    const rotateX = ((y / rect.height) - 0.5) * -20;
-                    
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-                    
-                    // Move the elements inside for 3D effect
-                    const icon = card.querySelector('.gesture-icon');
-                    const name = card.querySelector('.gesture-name');
-                    const desc = card.querySelector('.gesture-description');
-                    
-                    icon.style.transform = `translateZ(30px)`;
-                    name.style.transform = `translateZ(25px)`;
-                    desc.style.transform = `translateZ(20px)`;
-                }
-            });
-        });
-        
-        // Reset card position when mouse leaves
-        document.querySelectorAll('.gesture-card').forEach(card => {
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-                
-                const icon = this.querySelector('.gesture-icon');
-                const name = this.querySelector('.gesture-name');
-                const desc = this.querySelector('.gesture-description');
-                
-                icon.style.transform = 'translateZ(0)';
-                name.style.transform = 'translateZ(0)';
-                desc.style.transform = 'translateZ(0)';
-            });
-        });
-    </script>
+    });
+</script>
 
-    <!-- Add scroll reveal script -->
-    <script>
-        // Scroll reveal animation
-        function revealOnScroll() {
-            const reveals = document.querySelectorAll('.reveal');
-            
-            reveals.forEach(element => {
-                const windowHeight = window.innerHeight;
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                
-                if (elementTop < windowHeight - elementVisible) {
-                    element.classList.add('active');
-                }
-            });
-        }
-        
-        window.addEventListener('scroll', revealOnScroll);
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            revealOnScroll();
-            
-            // Add reveal class to sections
-            document.querySelectorAll('section').forEach(section => {
-                if (!section.classList.contains('hero-section')) {
-                    section.classList.add('reveal');
-                }
-            });
-        });
-    </script>
-
-    <!-- Add this JavaScript at the end of the file -->
-    <script>
-        // Gesture control toggle
-        document.getElementById('toggle-gesture').addEventListener('click', function() {
-            fetch('/toggle_gesture_control', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const statusElement = document.getElementById('connection-status');
-                const buttonText = document.querySelector('#toggle-gesture .gesture-text');
-                
-                if (data.enabled) {
-                    this.classList.add('active');
-                    statusElement.textContent = 'Gesture control is enabled';
-                    statusElement.classList.add('connected');
-                    buttonText.textContent = 'Disable Gesture Control';
-                    
-                    // Start the gesture event stream
-                    startGestureStream();
-                } else {
-                    this.classList.remove('active');
-                    statusElement.textContent = 'Gesture control is disabled';
-                    statusElement.classList.remove('connected');
-                    buttonText.textContent = 'Enable Gesture Control';
-                    
-                    // Stop the gesture event stream
-                    stopGestureStream();
-                }
-            })
-            .catch(error => {
-                console.error('Error toggling gesture control:', error);
-            });
-        });
-        
-        // Global variables for gesture control
-        let gestureEventSource = null;
-        let player = null; // Will hold the YouTube player instance
-        
-        // Function to start the gesture event stream
-        function startGestureStream() {
-            if (gestureEventSource) {
-                gestureEventSource.close();
-            }
-            
-            // Show the camera preview container
-            const cameraContainer = document.querySelector('.camera-preview-container');
-            if (cameraContainer) {
-                cameraContainer.style.display = 'block';
-            }
-            
-            // Reset the processed feed display
-            const processedFeed = document.getElementById('processed-feed');
-            if (processedFeed) {
-                processedFeed.style.display = 'none';
-            }
-            
-            // Update debug info
-            const debugInfo = document.getElementById('debug-info');
-            if (debugInfo) {
-                debugInfo.textContent = 'Connecting to camera...';
-            }
-            
-            // Create event source
-            gestureEventSource = new EventSource('/video_feed');
-            
-            gestureEventSource.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    
-                    // Update the debug info
-                    if (debugInfo) {
-                        if (data.gesture) {
-                            debugInfo.textContent = `Detected gesture: ${data.gesture}`;
-                        } else if (data.status === 'waiting') {
-                            debugInfo.textContent = 'Waiting for gesture data...';
-                        } else if (data.error) {
-                            debugInfo.textContent = `Error: ${data.error}`;
-                        }
-                    }
-                    
-                    // Update the processed feed image if available
-                    if (data.image && processedFeed) {
-                        processedFeed.src = data.image;
-                        processedFeed.style.display = 'block';
-                    }
-                    
-                    // Apply gesture controls to the video player
-                    if (player && data.gesture) {
-                        applyGestureControl(data.gesture);
-                    }
-                } catch (e) {
-                    console.error('Error processing gesture data:', e);
-                    if (debugInfo) {
-                        debugInfo.textContent = 'Error processing gesture data';
-                    }
-                }
-            };
-            
-            gestureEventSource.onerror = function(error) {
-                console.error('Gesture stream error:', error);
-                
-                if (statusElement) {
-                    statusElement.textContent = 'Connection error. Retrying...';
-                    statusElement.className = 'status error';
-                }
-                
-                // Close the current connection
-                gestureEventSource.close();
-                
-                // Attempt to reconnect with exponential backoff
-                reconnectAttempts++;
-                if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
-                    const delay = RECONNECT_DELAY * Math.pow(1.5, reconnectAttempts - 1);
-                    console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
-                    
-                    setTimeout(function() {
-                        startGestureStream();
-                    }, delay);
-                } else {
-                    if (statusElement) {
-                        statusElement.textContent = 'Failed to connect. Please try again.';
-                    }
-                    console.error('Max reconnect attempts reached');
-                }
-            };
-        }
-        
-        // Function to stop the gesture event stream
-        function stopGestureStream() {
-            if (gestureEventSource) {
-                gestureEventSource.close();
-                gestureEventSource = null;
-            }
-            
-            // Hide the processed feed
-            const processedFeed = document.getElementById('processed-feed');
-            if (processedFeed) {
-                processedFeed.style.display = 'none';
-            }
-            
-            // Reset debug info
-            const debugInfo = document.getElementById('debug-info');
-            if (debugInfo) {
-                debugInfo.textContent = 'Gesture control disabled';
-            }
-        }
-        
-        // Function to apply gesture controls to the YouTube player
-        function applyGestureControl(gesture) {
-            if (!player) return;
-            
-            // Update the UI to show the detected gesture
-            const gestureDisplay = document.getElementById('gesture-display');
-            if (gestureDisplay) {
-                gestureDisplay.textContent = gesture;
-                gestureDisplay.classList.add('active');
-                setTimeout(() => {
-                    gestureDisplay.classList.remove('active');
-                }, 1000);
-            }
-            
-            switch(gesture) {
-                case 'palm':
-                    // Play/pause
-                    const state = player.getPlayerState();
-                    if (state === YT.PlayerState.PLAYING) {
-                        player.pauseVideo();
-                        console.log('Gesture: Pause video');
-                    } else {
-                        player.playVideo();
-                        console.log('Gesture: Play video');
-                    }
-                    break;
-                    
-                case 'point_right':
-                    // Forward 10 seconds
-                    const currentTime = player.getCurrentTime();
-                    player.seekTo(currentTime + 10, true);
-                    console.log('Gesture: Forward 10 seconds');
-                    break;
-                    
-                case 'point_left':
-                    // Rewind 10 seconds
-                    const currentTime2 = player.getCurrentTime();
-                    player.seekTo(Math.max(0, currentTime2 - 10), true);
-                    console.log('Gesture: Rewind 10 seconds');
-                    break;
-                    
-                case 'index_up':
-                    // Increase volume
-                    const currentVolume = player.getVolume();
-                    player.setVolume(Math.min(100, currentVolume + 10));
-                    console.log('Gesture: Volume up to ' + Math.min(100, currentVolume + 10));
-                    break;
-                    
-                case 'fist':
-                    // Decrease volume
-                    const currentVolume2 = player.getVolume();
-                    player.setVolume(Math.max(0, currentVolume2 - 10));
-                    console.log('Gesture: Volume down to ' + Math.max(0, currentVolume2 - 10));
-                    break;
-            }
-        }
-        
-        // Function to create YouTube player for a specific video
-        function createYouTubePlayer(videoId) {
-            if (player) {
-                player.destroy();
-            }
-            
-            player = new YT.Player('player', {
-                height: '360',
-                width: '640',
-                videoId: videoId,
-                playerVars: {
-                    'playsinline': 1,
-                    'autoplay': 0,
-                    'controls': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-        
-        function onPlayerReady(event) {
-            console.log('Player ready');
-        }
-        
-        function onPlayerStateChange(event) {
-            console.log('Player state changed:', event.data);
-        }
-    </script>
-
-    <!-- Games section with game cards -->
-    <section id="games" class="games-section reveal">
-        <div class="section-header">
-            <h2 class="section-title">Play Gesture-Controlled Games</h2>
-            <p class="section-description">Experience the future of gaming with our collection of games designed for gesture control</p>
-        </div>
-        
-        <div class="games-grid">
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🏓</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Gesture Pong</h3>
-                    <p class="game-description">Classic pong game controlled with hand gestures. Move your hand up and down to control the paddle.</p>
-                </div>
-            </div>
-            
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🚀</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Space Defender</h3>
-                    <p class="game-description">Defend your spaceship against incoming asteroids using hand gestures to move and shoot.</p>
-                </div>
-            </div>
-            
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🏎️</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Gesture Racer</h3>
-                    <p class="game-description">Race against time using hand gestures to steer your car through challenging tracks.</p>
-                </div>
-            </div>
-            
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🧩</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Puzzle Master</h3>
-                    <p class="game-description">Solve puzzles using intuitive hand gestures to move and rotate pieces into place.</p>
-                </div>
-            </div>
-            
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🎯</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Gesture Archery</h3>
-                    <p class="game-description">Test your precision with this archery game controlled entirely by hand gestures.</p>
-                </div>
-            </div>
-            
-            <div class="game-card">
-                <div class="game-preview">
-                    <div class="game-icon">🎮</div>
-                    <div class="game-overlay">
-                        <button class="play-button">Play Now</button>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <h3 class="game-title">Coming Soon</h3>
-                    <p class="game-description">More gesture-controlled games are being developed. Check back soon!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-</body>
-</html>
+{% endblock %}
